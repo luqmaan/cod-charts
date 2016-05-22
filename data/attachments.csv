@@ -1,0 +1,40 @@
+More...,
+,Attachments
+,ADS Recoil Reduction affects every shot after the first in a burst
+,Grip overrides ADS Recoil Reduction of the Recon and Varix 3
+Reflex Sight,FOV = 50
+Recon,"FOV = 35, Idle Amount * 0.1, Centerspeed * 1.1, ADS Recoil Reduction = 0.15"
+Recon (Sniper Rifle),"FOV = 35, Centerspeed * 0.9, ADS Recoil Reduction = 0.15"
+Varix 3,"FOV = 30/52, Centerspeed * 1.1, ADS Recoil Reduction = 0.15"
+BOA 3,"FOV = 45, Centerspeed * 1.1"
+Thermal,"FOV = 41, Centerspeed * 1.1, ADS Recoil Reduction = 0.15"
+ELO,FOV = 50
+LRx3,FOV = 35
+Quickdraw,ADS Time * 0.7
+Quickdraw (LMG),ADS Time * 0.8
+Grip,ADS Recoil Reduction = 0.075
+Stock,"ADS Movement Speed = 0.68, ADS Firing Movement Speed = 0.57"
+Stock (SMG),ADS Movement Speed = 1.04
+"Stock (Kuda, VMP)",ADS Movement Speed = 1
+Stock (LMG),"ADS Movement Speed = 0.68, ADS Firing Movement Speed = 0.24"
+Stock (Sniper Rifle),"ADS Movement Speed = 0.6, ADS Firing Movement Speed = 0.48"
+Stock (Shotgun),"ADS Movement Speed = 1.04, ADS Firing Movement Speed = 1.04"
+Laser Sight,Hipspread * 0.45
+Laser Sight (SMG),Hipspread * 0.65
+"Laser Sight (Razorback, HG 40)",Hipspread * 0.45
+Suppressor,Range * 0.7
+Suppressor (AR),Range * 0.35
+Suppressor (KN-44),Range * 0.7
+Suppressor (LMG),Range * 0.1
+Suppressor (Shotgun),Range * 0.7 (Minimum Damage Range * 1)
+Suppressor (Argus),Damage * 0.9 (Base Damage * 1)
+High Caliber,"Head Multiplier = 1.5
+"
+"High Caliber (Sheiva, MX Garand)","Head Multiplier = 1.8
+"
+Long Barrel,Range * 1.13
+Long Barrel (AR),Range * 2
+Long Barrel (KN-44),Range * 1.13
+Long Barrel (SMG),"5th Damage Range * 1.25, Minimum Damage Range * 1.25"
+Long Barrel (Shotgun),"Minimum Damage Range * 1.13, Minimum Base Damage * 0.8"
+Ballistics CPU,Idle Amount * 0.25

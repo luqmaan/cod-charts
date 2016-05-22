@@ -1,0 +1,150 @@
+[
+  {
+    "More...": "",
+    "": "Attachments"
+  },
+  {
+    "More...": "",
+    "": "ADS Recoil Reduction affects every shot after the first in a burst"
+  },
+  {
+    "More...": "",
+    "": "Grip overrides ADS Recoil Reduction of the Recon and Varix 3"
+  },
+  {
+    "More...": "Reflex Sight",
+    "": "FOV = 50"
+  },
+  {
+    "More...": "Recon",
+    "": "FOV = 35, Idle Amount * 0.1, Centerspeed * 1.1, ADS Recoil Reduction = 0.15"
+  },
+  {
+    "More...": "Recon (Sniper Rifle)",
+    "": "FOV = 35, Centerspeed * 0.9, ADS Recoil Reduction = 0.15"
+  },
+  {
+    "More...": "Varix 3",
+    "": "FOV = 30/52, Centerspeed * 1.1, ADS Recoil Reduction = 0.15"
+  },
+  {
+    "More...": "BOA 3",
+    "": "FOV = 45, Centerspeed * 1.1"
+  },
+  {
+    "More...": "Thermal",
+    "": "FOV = 41, Centerspeed * 1.1, ADS Recoil Reduction = 0.15"
+  },
+  {
+    "More...": "ELO",
+    "": "FOV = 50"
+  },
+  {
+    "More...": "LRx3",
+    "": "FOV = 35"
+  },
+  {
+    "More...": "Quickdraw",
+    "": "ADS Time * 0.7"
+  },
+  {
+    "More...": "Quickdraw (LMG)",
+    "": "ADS Time * 0.8"
+  },
+  {
+    "More...": "Grip",
+    "": "ADS Recoil Reduction = 0.075"
+  },
+  {
+    "More...": "Stock",
+    "": "ADS Movement Speed = 0.68, ADS Firing Movement Speed = 0.57"
+  },
+  {
+    "More...": "Stock (SMG)",
+    "": "ADS Movement Speed = 1.04"
+  },
+  {
+    "More...": "Stock (Kuda, VMP)",
+    "": "ADS Movement Speed = 1"
+  },
+  {
+    "More...": "Stock (LMG)",
+    "": "ADS Movement Speed = 0.68, ADS Firing Movement Speed = 0.24"
+  },
+  {
+    "More...": "Stock (Sniper Rifle)",
+    "": "ADS Movement Speed = 0.6, ADS Firing Movement Speed = 0.48"
+  },
+  {
+    "More...": "Stock (Shotgun)",
+    "": "ADS Movement Speed = 1.04, ADS Firing Movement Speed = 1.04"
+  },
+  {
+    "More...": "Laser Sight",
+    "": "Hipspread * 0.45"
+  },
+  {
+    "More...": "Laser Sight (SMG)",
+    "": "Hipspread * 0.65"
+  },
+  {
+    "More...": "Laser Sight (Razorback, HG 40)",
+    "": "Hipspread * 0.45"
+  },
+  {
+    "More...": "Suppressor",
+    "": "Range * 0.7"
+  },
+  {
+    "More...": "Suppressor (AR)",
+    "": "Range * 0.35"
+  },
+  {
+    "More...": "Suppressor (KN-44)",
+    "": "Range * 0.7"
+  },
+  {
+    "More...": "Suppressor (LMG)",
+    "": "Range * 0.1"
+  },
+  {
+    "More...": "Suppressor (Shotgun)",
+    "": "Range * 0.7 (Minimum Damage Range * 1)"
+  },
+  {
+    "More...": "Suppressor (Argus)",
+    "": "Damage * 0.9 (Base Damage * 1)"
+  },
+  {
+    "More...": "High Caliber",
+    "": "Head Multiplier = 1.5\n"
+  },
+  {
+    "More...": "High Caliber (Sheiva, MX Garand)",
+    "": "Head Multiplier = 1.8\n"
+  },
+  {
+    "More...": "Long Barrel",
+    "": "Range * 1.13"
+  },
+  {
+    "More...": "Long Barrel (AR)",
+    "": "Range * 2"
+  },
+  {
+    "More...": "Long Barrel (KN-44)",
+    "": "Range * 1.13"
+  },
+  {
+    "More...": "Long Barrel (SMG)",
+    "": "5th Damage Range * 1.25, Minimum Damage Range * 1.25"
+  },
+  {
+    "More...": "Long Barrel (Shotgun)",
+    "": "Minimum Damage Range * 1.13, Minimum Base Damage * 0.8"
+  },
+  {
+    "More...": "Ballistics CPU",
+    "": "Idle Amount * 0.25"
+  }
+]
