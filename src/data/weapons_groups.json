@@ -1,0 +1,72 @@
+{
+    "ar": [
+        "KN-44",
+        "XR-2",
+        "HVK-30",
+        "ICR-1",
+        "Man-O-War",
+        "Sheiva",
+        "M8A7",
+        "MX Garand",
+        "FFAR"
+    ],
+    "smg": [
+        "Kuda",
+        "VMP",
+        "Weevil",
+        "Vesper",
+        "Pharo",
+        "Razorback",
+        "HG 40"
+    ],
+    "lmg": [
+        "BRM",
+        "Dingo",
+        "Gorgon",
+        "48 Dredge"
+    ],
+    "sniper": [
+        "Drakon",
+        "Locus",
+        "P-06",
+        "SVG-100",
+        "RSA Interdiction"
+    ],
+    "shotgun": [
+        "KRM-262",
+        "205 Brecci",
+        "Haymaker 12",
+        "Argus"
+    ],
+    "pistol": [
+        "MR6",
+        "MR6 DW",
+        "RK5",
+        "RK5 DW",
+        "L-CAR 9",
+        "L-CAR 9 DW",
+        "Marshal 16",
+        "Marshal 16 DW"
+    ],
+    "launcher": [
+        "XM-53",
+        "BlackCell",
+        "L4 Siege"
+    ],
+    "melee": [
+        "Fists",
+        "Combat Knife",
+        "NX ShadowClaw"
+    ],
+    "special": [
+        "Gravity Spikes",
+        "Sparrow",
+        "Tempest",
+        "War Machine",
+        "Annihilator",
+        "H.I.V.E.",
+        "Scythe",
+        "Ripper",
+        "Purifier"
+    ]
+}
