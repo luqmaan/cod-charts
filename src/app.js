@@ -23,7 +23,7 @@ function parseRangeUnits(units) {
     feet: units * 0.08334,
     yards: units * 0.02778,
     centimeters: units * 2.54,
-    meters: units * 0.0254,
+    meters: Math.floor(units * 0.0254),
   };
 }
 
@@ -132,9 +132,17 @@ function draw(title, labels, data) {
         scaleLabel: {
           display: true,
           labelString: 'Distance (meters)',
-        }
+        },
+        ticks: {
+          max: 60,
+        },
       }],
       yAxes: [{
+        ticks: {
+          mirror: true,
+          fontSize: 30,
+          fontColor: 'rgba(255, 255, 255, 1)',
+        }
       }]
     }
   };
