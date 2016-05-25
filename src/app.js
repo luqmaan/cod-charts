@@ -29,49 +29,46 @@ function parseRangeUnits(units) {
 
 const promiseWeapons = new Promise((resolve, reject) => {
   d3.csv('/data/weapons.csv')
-    .row((data) => {
-      const damages = [
-          {label: 'Max', key: 'Damage::Max'},
-          {label: '2', key: 'Damage::2'},
-          {label: '3', key: 'Damage::3'},
-          {label: '4', key: 'Damage::4'},
-          {label: '5', key: 'Damage::5'},
-          {label: 'Min', key: 'Damage::Min'},
-      ];
-      data.stk = [];
-      damages.forEach(damage => {
-        const stk = Math.ceil(100 / data[damage.key]);
-        console.log('stk', stk)
-        if (stk !== Infinity) {
-          data.stk.push({
-            stk: stk,
-            range: parseRangeUnits(data[`Range::${damage.label}`])
-          });
-          console.log(data);
-        }
-      });
-      return data;
-    })
-    .get((error, rows) => {
-      if (error) {
-        console.log(error)
-        reject(error);
+  .row((data) => {
+    const damages = [
+      {label: 'Max', key: 'Damage::Max'},
+      {label: '2', key: 'Damage::2'},
+      {label: '3', key: 'Damage::3'},
+      {label: '4', key: 'Damage::4'},
+      {label: '5', key: 'Damage::5'},
+      {label: 'Min', key: 'Damage::Min'},
+    ];
+    data.stk = [];
+    damages.forEach(damage => {
+      const stk = Math.ceil(100 / data[damage.key]);
+      if (stk !== Infinity) {
+        data.stk.push({
+          stk: stk,
+          range: parseRangeUnits(data[`Range::${damage.label}`])
+        });
       }
-      window.rows = rows;
-      const weaponsByName = window.weaponsByName = _.chain(rows)
-        .filter(r => !!r.name)
-        .keyBy('name')
-        .value();
-
-      resolve(weaponsByName);
     });
+    return data;
+  })
+  .get((error, rows) => {
+    if (error) {
+      reject(error);
+    }
+    window.rows = rows;
+    const weaponsByName = window.weaponsByName = _.chain(rows)
+    .filter(r => !!r.name)
+    .keyBy('name')
+    .value();
+
+    resolve(weaponsByName);
+  });
 });
 
 const promiseWeaponGroups = loadJson('/data/weapon_groups.json')
-  .then((res) => {
-    const weaponGroups = window.weaponGroups = res;
-    return weaponGroups;
-  });
+.then((res) => {
+  const weaponGroups = window.weaponGroups = res;
+  return weaponGroups;
+});
 
 Promise.all([
   promiseWeapons,
@@ -90,7 +87,8 @@ Promise.all([
       gun.stk.map(stk => stk.range.meters)
     );
   });
-});
+})
+.catch((err) => console.error(error));
 
 function draw(title, labels, data) {
   const template = `<div class="chart"><canvas width="400" height="400"></canvas></div>`;
