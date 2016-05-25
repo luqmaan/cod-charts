@@ -3,3 +3,8 @@ body {
     font-family: sans-serif;
     color: rgba(255, 255, 255, 1);
 }
+.chart {
+    width: 400px;
+    height: 400px;
+    float: left;
+}

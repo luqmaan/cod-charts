@@ -18,22 +18,18 @@ function loadJson(path) {
 
 const promiseWeapons = new Promise((resolve, reject) => {
   d3.csv('/data/weapons.csv')
-    .row((d) => {
-      return _.chain(d)
-        .set('name', d['More...'])
-        .value();
-    })
     .get((error, rows) => {
       if (error) {
         console.log(error)
         reject(error);
       }
       window.rows = rows;
-      const weaponGroups = _.chain(rows)
+      const weaponsByName = window.weaponsByName = _.chain(rows)
         .filter(r => !!r.name)
         .keyBy('name')
         .value();
-      resolve(weaponGroups);
+
+      resolve(weaponsByName);
     });
 });
 
@@ -50,29 +46,47 @@ Promise.all([
 .then((args) => {
   const weaponsByName = args[0];
   const weaponGroups = args[1];
-  console.log(weaponsByName)
-  draw(weaponGroups.ar.map(name => weaponsByName[name]))
+  const ar = weaponGroups.ar.map(name => weaponsByName[name]);
+  const damages = [
+      {label: 'Min', key: 'Damage::Min'},
+      {label: '2', key: 'Damage::2'},
+      {label: '3', key: 'Damage::3'},
+      {label: '4', key: 'Damage::4'},
+      {label: '5', key: 'Damage::5'},
+      {label: 'Max', key: 'Damage::Max'},
+  ];
+
+  damages.map(damage => {
+      draw(
+        damage.label,
+        ar.map(ar => ar.name),
+        ar.map(ar => ar[damage.key])
+      );
+  })
+
 });
 
-function draw(weapons) {
-  const ctx = document.querySelector('#weapons-chart');
+function draw(title, labels, data) {
+  const template = `<div class="chart"><canvas width="400" height="400"></canvas></div>`;
+  const div = document.createElement('div');
+  div.innerHTML = template;
+  document.querySelector('.weapons').appendChild(div);
+  const ctx = div.querySelector('canvas');
 
-  const data = {
-    labels: weapons.map(w => w.name),
+  const chartData = {
+    labels: labels,
     datasets: [
       {
-        label: 'My First dataset',
+        label: title,
         backgroundColor: 'rgba(255,99,132,0.2)',
         borderColor: 'rgba(255,99,132,1)',
         borderWidth: 1,
         hoverBackgroundColor: 'rgba(255,99,132,0.4)',
         hoverBorderColor: 'rgba(255,99,132,1)',
-        data: weapons.map(w => w['Damage::2']),
-      }
+        data: data,
+      },
     ]
   };
-
-  console.log('data', data)
 
   const options = {
     scales: {
@@ -87,7 +101,7 @@ function draw(weapons) {
 
   const weaponsChart = new Chart(ctx, {
     type: 'bar',
-    data: data,
+    data: chartData,
     options: options
   });
 }
