@@ -27,27 +27,25 @@ function parseRangeUnits(units) {
   };
 }
 
+function calculateSTK(weapon) {
+  const cols = ['Max', '2', '3', '4', '5', 'Min'];
+  const shotsToKill = [];
+  cols.forEach((col) => {
+    const stk = Math.ceil(100 / weapon[`Damage::${col}`]);
+    if (stk !== Infinity) {
+      shotsToKill.push({
+        stk: stk,
+        range: parseRangeUnits(weapon[`Range::${col}`])
+      });
+    }
+  });
+  return shotsToKill;
+}
+
 const promiseWeapons = new Promise((resolve, reject) => {
   d3.csv('/data/weapons.csv')
   .row((data) => {
-    const damages = [
-      {label: 'Max', key: 'Damage::Max'},
-      {label: '2', key: 'Damage::2'},
-      {label: '3', key: 'Damage::3'},
-      {label: '4', key: 'Damage::4'},
-      {label: '5', key: 'Damage::5'},
-      {label: 'Min', key: 'Damage::Min'},
-    ];
-    data.stk = [];
-    damages.forEach(damage => {
-      const stk = Math.ceil(100 / data[damage.key]);
-      if (stk !== Infinity) {
-        data.stk.push({
-          stk: stk,
-          range: parseRangeUnits(data[`Range::${damage.label}`])
-        });
-      }
-    });
+    data.stk = calculateSTK(data);
     return data;
   })
   .get((error, rows) => {
@@ -88,7 +86,7 @@ Promise.all([
     );
   });
 })
-.catch((err) => console.error(error));
+.catch((err) => console.error(err));
 
 function draw(title, labels, data) {
   const template = `<div class="chart"><canvas width="400" height="400"></canvas></div>`;
