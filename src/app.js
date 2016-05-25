@@ -28,21 +28,30 @@ function parseRangeUnits(units) {
 }
 
 function calculateSTK(weapon) {
-  const shotsToKill = [];
-
   const damageKeys = ['damage', 'damage2', 'damage3', 'damage4', 'damage5', 'minDamage'];
   const rangeKeys = ['maxDamageRange', 'damageRange2', 'damageRange3', 'damageRange4', 'damageRange5', 'minDamageRange'];
 
-  damageKeys.forEach((damageKey, i) => {
+  const shotsToKill = damageKeys.reduce((prev, damageKey, i) => {
     const rangeKey = rangeKeys[i];
     const stk = Math.ceil(100 / weapon[damageKey]);
     if (stk !== Infinity) {
-      shotsToKill.push({
+      const data = {
         stk: stk,
         range: parseRangeUnits(weapon[rangeKey])
-      });
+      };
+      if (prev.length > 0) {
+        if (stk === prev[prev.length - 1].stk) {
+          prev.pop();
+          return [...prev, data];
+        }
+        if (data.range.units - prev[prev.length - 1].range.units < 2) {
+          return prev;
+        }
+      }
+      return [...prev, data];
     }
-  });
+    return prev;
+  }, []);
   return shotsToKill;
 }
 
@@ -79,14 +88,16 @@ Promise.all([
   const weaponGroups = args[1];
 
   const ars = window.ars = _.filter(weaponsByName, weapon => {
-    return weaponGroups.ar.indexOf(weapon.displayName) !== -1 && weapon.WEAPONFILE.indexOf('_mp') !== -1;
+    return weaponGroups.ar.indexOf(weapon.name) !== -1 && weapon.WEAPONFILE.indexOf('_mp') !== -1;
   });
 
-  ars.map(gun => {
+  ars.sort((weaponA, weaponB) => weaponA.stk[0].stk > weaponB.stk[0].stk);
+
+  ars.map(weapon => {
     draw(
-      `${gun.name} Shots To Kill`,
-      gun.stk.map(stk => stk.stk),
-      gun.stk.map(stk => stk.range.meters)
+      `${weapon.name} Shots To Kill`,
+      weapon.stk.map(stk => stk.stk),
+      weapon.stk.map(stk => stk.range.meters)
     );
   });
 })
@@ -105,7 +116,7 @@ function draw(title, labels, data) {
       {
         label: title,
         backgroundColor: 'rgba(255, 102, 0, 0.4)',
-        borderColor: 'rgba(255, 102, 0, 0.7)',
+        borderColor: 'rgba(255, 102, 0, 0.6)',
         borderWidth: 1,
         hoverBackgroundColor: 'rgba(255, 102, 0, 0.6)',
         hoverBorderColor: 'rgba(255, 102, 0, 0.9)',
@@ -124,9 +135,6 @@ function draw(title, labels, data) {
         }
       }],
       yAxes: [{
-        ticks: {
-          max: 60,
-        }
       }]
     }
   };
