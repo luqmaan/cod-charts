@@ -16,8 +16,42 @@ function loadJson(path) {
   return load(path).then((res) => JSON.parse(res));
 }
 
+function parseRangeUnits(units) {
+  return {
+    units: units,
+    inches: units,
+    feet: units * 0.08334,
+    yards: units * 0.02778,
+    centimeters: units * 2.54,
+    meters: units * 0.0254,
+  };
+}
+
 const promiseWeapons = new Promise((resolve, reject) => {
   d3.csv('/data/weapons.csv')
+    .row((data) => {
+      const damages = [
+          {label: 'Max', key: 'Damage::Max'},
+          {label: '2', key: 'Damage::2'},
+          {label: '3', key: 'Damage::3'},
+          {label: '4', key: 'Damage::4'},
+          {label: '5', key: 'Damage::5'},
+          {label: 'Min', key: 'Damage::Min'},
+      ];
+      data.stk = [];
+      damages.forEach(damage => {
+        const stk = Math.ceil(100 / data[damage.key]);
+        console.log('stk', stk)
+        if (stk !== Infinity) {
+          data.stk.push({
+            stk: stk,
+            range: parseRangeUnits(data[`Range::${damage.label}`])
+          });
+          console.log(data);
+        }
+      });
+      return data;
+    })
     .get((error, rows) => {
       if (error) {
         console.log(error)
@@ -47,23 +81,15 @@ Promise.all([
   const weaponsByName = args[0];
   const weaponGroups = args[1];
   const ar = weaponGroups.ar.map(name => weaponsByName[name]);
-  const damages = [
-      {label: 'Min', key: 'Damage::Min'},
-      {label: '2', key: 'Damage::2'},
-      {label: '3', key: 'Damage::3'},
-      {label: '4', key: 'Damage::4'},
-      {label: '5', key: 'Damage::5'},
-      {label: 'Max', key: 'Damage::Max'},
-  ];
 
-  damages.map(damage => {
-      draw(
-        damage.label,
-        ar.map(ar => ar.name),
-        ar.map(ar => ar[damage.key])
-      );
-  })
-
+  ar.map(gun => {
+    console.log(gun.name)
+    draw(
+      `${gun.name} Shots To Kill`,
+      gun.stk.map(stk => stk.stk),
+      gun.stk.map(stk => stk.range.meters)
+    );
+  });
 });
 
 function draw(title, labels, data) {
@@ -95,9 +121,6 @@ function draw(title, labels, data) {
       }],
       yAxes: [{
         stacked: true,
-        ticks: {
-          min: 20,
-        }
       }]
     }
   };
