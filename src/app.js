@@ -94,7 +94,10 @@ function draw(title, labels, data) {
         stacked: true
       }],
       yAxes: [{
-        stacked: true
+        stacked: true,
+        ticks: {
+          min: 20,
+        }
       }]
     }
   };
