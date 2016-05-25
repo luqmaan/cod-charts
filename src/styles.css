@@ -7,4 +7,6 @@ body {
     width: 400px;
     height: 400px;
     float: left;
+    background: rgba(25, 15, 15, 1);
+    margin: 10px;
 }

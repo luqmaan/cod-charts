@@ -28,14 +28,18 @@ function parseRangeUnits(units) {
 }
 
 function calculateSTK(weapon) {
-  const cols = ['Max', '2', '3', '4', '5', 'Min'];
   const shotsToKill = [];
-  cols.forEach((col) => {
-    const stk = Math.ceil(100 / weapon[`Damage::${col}`]);
+
+  const damageKeys = ['damage', 'damage2', 'damage3', 'damage4', 'damage5', 'minDamage'];
+  const rangeKeys = ['maxDamageRange', 'damageRange2', 'damageRange3', 'damageRange4', 'damageRange5', 'minDamageRange'];
+
+  damageKeys.forEach((damageKey, i) => {
+    const rangeKey = rangeKeys[i];
+    const stk = Math.ceil(100 / weapon[damageKey]);
     if (stk !== Infinity) {
       shotsToKill.push({
         stk: stk,
-        range: parseRangeUnits(weapon[`Range::${col}`])
+        range: parseRangeUnits(weapon[rangeKey])
       });
     }
   });
@@ -43,8 +47,9 @@ function calculateSTK(weapon) {
 }
 
 const promiseWeapons = new Promise((resolve, reject) => {
-  d3.csv('/data/weapons.csv')
+  d3.csv('/data/raw_weapons.csv')
   .row((data) => {
+    data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
     data.stk = calculateSTK(data);
     return data;
   })
@@ -52,11 +57,8 @@ const promiseWeapons = new Promise((resolve, reject) => {
     if (error) {
       reject(error);
     }
-    window.rows = rows;
-    const weaponsByName = window.weaponsByName = _.chain(rows)
-    .filter(r => !!r.name)
-    .keyBy('name')
-    .value();
+
+    const weaponsByName = window.weaponsByName = _.keyBy(rows, 'WEAPONFILE');
 
     resolve(weaponsByName);
   });
@@ -75,10 +77,12 @@ Promise.all([
 .then((args) => {
   const weaponsByName = args[0];
   const weaponGroups = args[1];
-  const ar = weaponGroups.ar.map(name => weaponsByName[name]);
 
-  ar.map(gun => {
-    console.log(gun.name)
+  const ars = window.ars = _.filter(weaponsByName, weapon => {
+    return weaponGroups.ar.indexOf(weapon.displayName) !== -1 && weapon.WEAPONFILE.indexOf('_mp') !== -1;
+  });
+
+  ars.map(gun => {
     draw(
       `${gun.name} Shots To Kill`,
       gun.stk.map(stk => stk.stk),
@@ -100,11 +104,11 @@ function draw(title, labels, data) {
     datasets: [
       {
         label: title,
-        backgroundColor: 'rgba(255,99,132,0.2)',
-        borderColor: 'rgba(255,99,132,1)',
+        backgroundColor: 'rgba(255, 102, 0, 0.4)',
+        borderColor: 'rgba(255, 102, 0, 0.7)',
         borderWidth: 1,
-        hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-        hoverBorderColor: 'rgba(255,99,132,1)',
+        hoverBackgroundColor: 'rgba(255, 102, 0, 0.6)',
+        hoverBorderColor: 'rgba(255, 102, 0, 0.9)',
         data: data,
       },
     ]
@@ -113,16 +117,22 @@ function draw(title, labels, data) {
   const options = {
     scales: {
       xAxes: [{
-        stacked: true
+        stacked: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Distance (meters)',
+        }
       }],
       yAxes: [{
-        stacked: true,
+        ticks: {
+          max: 60,
+        }
       }]
     }
   };
 
   const weaponsChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'horizontalBar',
     data: chartData,
     options: options
   });
