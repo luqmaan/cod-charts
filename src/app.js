@@ -150,11 +150,12 @@ Promise.all([
   let weapons;
 
   function setup() {
-    console.log('setup');
+    document.querySelector('.loader').classList.remove('hidden');
     document.querySelector('.weapons').innerHTML = '';
     chartsById = {};
     weapons = filterWeapons(weaponsById, weaponGroups);
     draw(chartsById, weapons);
+    document.querySelector('.loader').classList.add('hidden');
   }
   setup();
 
@@ -191,10 +192,19 @@ function draw(chartsById, weapons) {
       chartsById[weaponModel.id] = chart;
     }
   });
+  document.querySelector('.loader').innerHTML = '';
 }
 
+Chart.defaults.global.defaultFontFamily = 'Oswald, sans-serif';
+
 function drawChart(title, labels, data) {
-  const template = `<div class="chart">${title}<canvas width="250" height="250"></canvas></div>`;
+  const template = `
+    <div class="chart">
+      <span class="title">${title}</span>
+      <span class="watermark">CODCharts.com</span>
+      <canvas width="250" height="250"></canvas>
+    </div>
+  `;
   const div = document.createElement('div');
   div.innerHTML = template;
   document.querySelector('.weapons').appendChild(div);
@@ -216,12 +226,19 @@ function drawChart(title, labels, data) {
   };
 
   const options = {
+    legend: {
+      display: false,
+    },
     scales: {
+      paddingLeft: 30,
       xAxes: [{
         ticks: {
-          fontSize: 30,
+          fontSize: 20,
           fontColor: 'rgba(102, 102, 102, 1)',
-        }
+        },
+        gridLines: {
+          display: false
+        },
       }],
       yAxes: [{
         scaleLabel: {
@@ -231,6 +248,9 @@ function drawChart(title, labels, data) {
         ticks: {
           max: 100,
           min: 0,
+        },
+        gridLines: {
+          color: 'rgba(52, 52, 52, 1)',
         },
       }]
     }
