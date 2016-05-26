@@ -27,25 +27,41 @@ function parseRangeUnits(units) {
   };
 }
 
-function innerSTK(weapon, attachmentsById, attachments, index) {
+function getSuppressorDamageRangeScale(weapon, rangeIndex) {
+  const damageRangeScaleKeys = ['damageRangeScale1', 'damageRangeScale2',	'damageRangeScale3',	'damageRangeScale4',	'damageRangeScale5',	'damageRangeScale6'];
+  if (weapon.WEAPONFILE.indexOf('ar_standard') !== -1) {
+    return Number(attachmentsById.suppressed.damageRangeScale);
+  }
+  if (weapon.WEAPONFILE.indexOf('ar_') !== -1) {
+    return Number(attachmentsById.suppressed_ar.damageRangeScale);
+  }
+  if (weapon.WEAPONFILE.indexOf('smg_') !== -1) {
+    return Number(attachmentsById.suppressed_smg.damageRangeScale);
+  }
+  if (weapon.WEAPONFILE.indexOf('shotgun_precision_') !== -1) {
+    return Number(attachmentsById.suppressed_shotgunprecision[damageRangeScaleKeys[rangeIndex]]);
+  }
+  if (weapon.WEAPONFILE.indexOf('shotgun_') !== -1) {
+    return Number(attachmentsById.suppressed_shotgun.damageRangeScale);
+  }
+  return 1;
+}
+
+function getDamage(weapon, rangeIndex) {
   const damageKeys = ['damage', 'damage2', 'damage3', 'damage4', 'damage5', 'minDamage'];
+  const multishotBaseDamageKeys = ['multishotBaseDamage1', 'multishotBaseDamage2', 'multishotBaseDamage3', 'multishotBaseDamage4', 'multishotBaseDamage5', 'multishotBaseDamage6'];
+  return Number(weapon[damageKeys[rangeIndex]]) + Number(weapon[multishotBaseDamageKeys[rangeIndex]]);
+}
+
+function innerSTK(weapon, attachmentsById, attachments, rangeIndex) {
   const rangeKeys = ['maxDamageRange', 'damageRange2', 'damageRange3', 'damageRange4', 'damageRange5', 'minDamageRange'];
   const damageScaleKeys = ['damageScale1', 'damageScale2',	'damageScale3',	'damageScale4',	'damageScale5',	'damageScale6'];
-  const damageRangeScaleKeys = ['damageRangeScale1', 'damageRangeScale2',	'damageRangeScale3',	'damageRangeScale4',	'damageRangeScale5',	'damageRangeScale6'];
 
-  let damageRangeScale = 1;
-  if (weapon.WEAPONFILE.indexOf('ar_') !== -1) {
-    damageRangeScale = Number(attachmentsById.suppressed_ar.damageRangeScale);
-    if (weapon.WEAPONFILE.indexOf('ar_standard') !== -1) {
-      damageRangeScale = Number(attachmentsById.suppressed.damageRangeScale);
-    }
-  }
-
-  const damage = Number(weapon[damageKeys[index]]);
+  const damage = getDamage(weapon, rangeIndex);
   const stk = Math.ceil(100 / damage);
-  let range = weapon[rangeKeys[index]];
+  let range = weapon[rangeKeys[rangeIndex]];
   if (attachments.indexOf('suppressor') !== -1) {
-    range = damageRangeScale * range;
+    range = range * getSuppressorDamageRangeScale(weapon, rangeIndex);
   }
   return {
     damage: damage,
@@ -122,7 +138,7 @@ Promise.all([
   const weaponGroups = args[1];
 
   const weapons = _.filter(weaponsById, (weapon) => {
-    return weaponGroups.ar.indexOf(weapon.name) !== -1 && weapon.stk.length && weapon.WEAPONFILE.indexOf('_mp') !== -1;
+    return weaponGroups.shotgun.indexOf(weapon.name) !== -1 && weapon.stk.length && weapon.WEAPONFILE.indexOf('_mp') !== -1;
   });
 
   weapons.sort((weaponA, weaponB) => weaponA.stk[0].stk > weaponB.stk[0].stk);
