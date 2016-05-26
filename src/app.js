@@ -27,20 +27,41 @@ function parseRangeUnits(units) {
   };
 }
 
-function calculateSTK(weapon) {
+function innerSTK(weapon, attachmentsById, attachments, index) {
   const damageKeys = ['damage', 'damage2', 'damage3', 'damage4', 'damage5', 'minDamage'];
   const rangeKeys = ['maxDamageRange', 'damageRange2', 'damageRange3', 'damageRange4', 'damageRange5', 'minDamageRange'];
+  const damageScaleKeys = ['damageScale1', 'damageScale2',	'damageScale3',	'damageScale4',	'damageScale5',	'damageScale6'];
+  const damageRangeScaleKeys = ['damageRangeScale1', 'damageRangeScale2',	'damageRangeScale3',	'damageRangeScale4',	'damageRangeScale5',	'damageRangeScale6'];
 
-  const shotsToKill = damageKeys.reduce((prev, damageKey, i) => {
-    const rangeKey = rangeKeys[i];
-    const stk = Math.ceil(100 / weapon[damageKey]);
-    if (stk !== Infinity) {
-      const data = {
-        stk: stk,
-        range: parseRangeUnits(weapon[rangeKey])
-      };
+  let damageRangeScale = 1;
+  if (weapon.WEAPONFILE.indexOf('ar_') !== -1) {
+    damageRangeScale = Number(attachmentsById.suppressed_ar.damageRangeScale);
+    if (weapon.WEAPONFILE.indexOf('ar_standard') !== -1) {
+      damageRangeScale = Number(attachmentsById.suppressed.damageRangeScale);
+    }
+  }
+
+  const damage = Number(weapon[damageKeys[index]]);
+  const stk = Math.ceil(100 / damage);
+  let range = weapon[rangeKeys[index]];
+  if (attachments.indexOf('suppressor') !== -1) {
+    range = damageRangeScale * range;
+  }
+  return {
+    damage: damage,
+    stk: stk,
+    range: parseRangeUnits(range),
+  };
+}
+
+function calculateSTK(weapon, attachmentsById, attachments) {
+  const shotsToKill = [0, 1, 3, 4, 5].reduce((prev, rangeKey) => {
+
+    const data = innerSTK(weapon, attachmentsById, attachments, rangeKey);
+
+    if (data.stk !== Infinity) {
       if (prev.length > 0) {
-        if (stk === prev[prev.length - 1].stk) {
+        if (data.stk === prev[prev.length - 1].stk) {
           prev.pop();
           return [...prev, data];
         }
@@ -55,11 +76,24 @@ function calculateSTK(weapon) {
   return shotsToKill;
 }
 
-const promiseWeapons = new Promise((resolve, reject) => {
+const promiseAttachments = new Promise((resolve, reject) => {
+  d3.csv('/data/raw_attachments.csv')
+    .get((error, rows) => {
+      if (error) {
+        reject(error);
+      }
+
+      const attachmentsById = window.attachmentsById = _.keyBy(rows, 'ATTACHMENTFILE');
+
+      resolve(attachmentsById);
+    });
+});
+
+const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
   d3.csv('/data/raw_weapons.csv')
   .row((data) => {
     data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
-    data.stk = calculateSTK(data);
+    data.stk = calculateSTK(data, attachmentsById, ['suppressor']);
     return data;
   })
   .get((error, rows) => {
@@ -67,9 +101,9 @@ const promiseWeapons = new Promise((resolve, reject) => {
       reject(error);
     }
 
-    const weaponsByName = window.weaponsByName = _.keyBy(rows, 'WEAPONFILE');
+    const weaponsById = window.weaponsById = _.keyBy(rows, 'WEAPONFILE');
 
-    resolve(weaponsByName);
+    resolve(weaponsById);
   });
 });
 
@@ -80,28 +114,28 @@ const promiseWeaponGroups = loadJson('/data/weapon_groups.json')
 });
 
 Promise.all([
-  promiseWeapons,
+  promiseAttachments.then(attachments => promiseWeapons(attachments)),
   promiseWeaponGroups,
 ])
 .then((args) => {
-  const weaponsByName = args[0];
+  const weaponsById = args[0];
   const weaponGroups = args[1];
 
-  const ars = window.ars = _.filter(weaponsByName, weapon => {
-    return weaponGroups.ar.indexOf(weapon.name) !== -1 && weapon.WEAPONFILE.indexOf('_mp') !== -1;
+  const weapons = _.filter(weaponsById, (weapon) => {
+    return weaponGroups.ar.indexOf(weapon.name) !== -1 && weapon.stk.length && weapon.WEAPONFILE.indexOf('_mp') !== -1;
   });
 
-  ars.sort((weaponA, weaponB) => weaponA.stk[0].stk > weaponB.stk[0].stk);
+  weapons.sort((weaponA, weaponB) => weaponA.stk[0].stk > weaponB.stk[0].stk);
 
-  ars.map(weapon => {
+  weapons.map(weapon => {
     draw(
-      `${weapon.name} Shots To Kill`,
+      weapon.name,
       weapon.stk.map(stk => stk.stk),
       weapon.stk.map(stk => stk.range.meters)
     );
   });
 })
-.catch((err) => console.error(err));
+// .catch((err) => console.error(err));
 
 function draw(title, labels, data) {
   const template = `<div class="chart"><canvas width="400" height="400"></canvas></div>`;
@@ -128,27 +162,26 @@ function draw(title, labels, data) {
   const options = {
     scales: {
       xAxes: [{
-        stacked: true,
+        ticks: {
+          fontSize: 30,
+          fontColor: 'rgba(255, 255, 255, 1)',
+        }
+      }],
+      yAxes: [{
         scaleLabel: {
           display: true,
           labelString: 'Distance (meters)',
         },
         ticks: {
           max: 60,
+          min: 0,
         },
-      }],
-      yAxes: [{
-        ticks: {
-          mirror: true,
-          fontSize: 30,
-          fontColor: 'rgba(255, 255, 255, 1)',
-        }
       }]
     }
   };
 
   const weaponsChart = new Chart(ctx, {
-    type: 'horizontalBar',
+    type: 'bar',
     data: chartData,
     options: options
   });
