@@ -47,26 +47,5 @@
         "L-CAR 9 DW",
         "Marshal 16",
         "Marshal 16 DW"
-    ],
-    "launcher": [
-        "XM-53",
-        "BlackCell",
-        "L4 Siege"
-    ],
-    "melee": [
-        "Fists",
-        "Combat Knife",
-        "NX ShadowClaw"
-    ],
-    "special": [
-        "Gravity Spikes",
-        "Sparrow",
-        "Tempest",
-        "War Machine",
-        "Annihilator",
-        "H.I.V.E.",
-        "Scythe",
-        "Ripper",
-        "Purifier"
     ]
 }

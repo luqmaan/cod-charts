@@ -1,16 +1,44 @@
 <html>
     <head>
         <title>Black Ops 3 Weapons Stats | Call of Duty</title>
+        <link href="normalize.css" rel="stylesheet" type="text/css" />
         <link href="styles.css" rel="stylesheet" type="text/css" />
         <script src="Chart.js"></script>
         <script src="lodash.js"></script>
         <script src="d3.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     </head>
     <body>
-        <div>
-            <h1>Black Ops 3 Weapons Stats</h1>
-            <h3>Shots To Kill</h3>
-            <div class="weapons">
+        <div class="app">
+            <div class="header">
+                <h1>CODCharts.com</h1>
+                <div class="options">
+                    <form id="options">
+                        <div>
+                            <label for="category">
+                                Category
+                                <select name="category" id="category">
+                                    <option value="ar" selected>Assault Rifles</option>
+                                    <option value="smg">Submachine Guns</option>
+                                    <option value="lmg">Light Machine Guns</option>
+                                    <option value="sniper">Sniper Rifles</option>
+                                    <option value="shotgun">Shotguns</option>
+                                    <option value="pistol">Pistols</option>
+                                </select>
+                            </label>
+                            <label for="suppressor">
+                                Suppressor
+                                <input name="suppressor" id="suppressor" type="checkbox" />
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="main">
+                <h2>Black Ops 3 Weapon Stats</h1>
+                <h2>Shots To Kill</h3>
+                <div class="weapons">
+                </div>
             </div>
         </div>
         <script src="app.js"></script>

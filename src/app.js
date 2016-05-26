@@ -58,7 +58,7 @@ function getRange(weapon, rangeIndex) {
   return Number(weapon[rangeKeys[rangeIndex]]);
 }
 
-function innerStats(weapon, attachmentsById, attachments, rangeIndex) {
+function getStatsAtRange(weapon, attachmentsById, attachments, rangeIndex) {
   const damageScaleKeys = ['damageScale1', 'damageScale2',	'damageScale3',	'damageScale4',	'damageScale5',	'damageScale6'];
 
   const damage = getDamage(weapon, rangeIndex);
@@ -74,11 +74,11 @@ function innerStats(weapon, attachmentsById, attachments, rangeIndex) {
   };
 }
 
-function calculateStats(weapon, attachmentsById, attachments) {
-  const shotsToKill = [0, 1, 3, 4, 5].reduce((prev, rangeKey) => {
+function parseWeapon(weapon, attachmentsById, attachments) {
+  const rangeIndexes = [0, 1, 3, 4, 5];
 
-    const stats = innerStats(weapon, attachmentsById, attachments, rangeKey);
-
+  const stats = rangeIndexes.reduce((prev, rangeKey) => {
+    const stats = getStatsAtRange(weapon, attachmentsById, attachments, rangeKey);
     if (stats.stk !== Infinity) {
       if (prev.length > 0) {
         if (stats.stk === prev[prev.length - 1].stk) {
@@ -93,7 +93,12 @@ function calculateStats(weapon, attachmentsById, attachments) {
     }
     return prev;
   }, []);
-  return shotsToKill;
+
+  return {
+    name: weapon.name,
+    id: weapon.WEAPONFILE,
+    stats: stats,
+  };
 }
 
 const promiseAttachments = new Promise((resolve, reject) => {
@@ -113,7 +118,6 @@ const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
   d3.csv('/data/raw_weapons.csv')
   .row((data) => {
     data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
-    data.stats = calculateStats(data, attachmentsById, ['suppressor']);
     return data;
   })
   .get((error, rows) => {
@@ -130,6 +134,7 @@ const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
 const promiseWeaponGroups = loadJson('/data/weapon_groups.json')
 .then((res) => {
   const weaponGroups = window.weaponGroups = res;
+  weaponGroups.all = _.reduce(weaponGroups, (prev, current) => [...prev, ...current]);
   return weaponGroups;
 });
 
@@ -141,24 +146,55 @@ Promise.all([
   const weaponsById = args[0];
   const weaponGroups = args[1];
 
-  const weapons = _.filter(weaponsById, (weapon) => {
-    return weaponGroups.shotgun.indexOf(weapon.name) !== -1 && weapon.stats.length && weapon.WEAPONFILE.indexOf('_mp') !== -1;
-  });
+  let chartsById;
+  let weapons;
 
-  weapons.sort((weaponA, weaponB) => weaponA.stats[0].stk > weaponB.stats[0].stk);
+  function setup() {
+    console.log('setup');
+    document.querySelector('.weapons').innerHTML = '';
+    chartsById = {};
+    weapons = filterWeapons(weaponsById, weaponGroups);
+    draw(chartsById, weapons);
+  }
+  setup();
 
-  weapons.map(weapon => {
-    draw(
-      weapon.name,
-      weapon.stats.map(stk => stk.stk),
-      weapon.stats.map(stk => stk.range.meters)
-    );
-  });
+  document.querySelector('select#category').onchange = setup;
+  document.querySelector('input#suppressor').onchange = () => draw(chartsById, weapons);
 })
 // .catch((err) => console.error(err));
 
-function draw(title, labels, data) {
-  const template = `<div class="chart"><canvas width="400" height="400"></canvas></div>`;
+function filterWeapons(weaponsById, weaponGroups) {
+  const category = document.querySelector('select#category').value;
+
+  return _.filter(weaponsById, (weapon) => (
+    weapon.WEAPONFILE.indexOf('_mp') !== -1 &&
+    weapon.WEAPONFILE.indexOf('dualoptic_') === -1 &&
+    weaponGroups[category].indexOf(weapon.displayName) !== -1
+  ));
+}
+
+function draw(chartsById, weapons) {
+  const attachments = document.querySelector('input#suppressor').checked ? ['suppressor'] : [];
+
+  weapons.forEach((weapon) => {
+    const weaponModel = parseWeapon(weapon, attachmentsById, attachments);
+    const labels = weaponModel.stats.map(stat => stat.stk);
+    const data = weaponModel.stats.map(stat => stat.range.meters);
+
+    let chart = chartsById[weaponModel.id];
+    if (chart) {
+      chart.data.datasets[0].data = data;
+      chart.update();
+    }
+    else {
+      chart = drawChart(weaponModel.name, labels, data);
+      chartsById[weaponModel.id] = chart;
+    }
+  });
+}
+
+function drawChart(title, labels, data) {
+  const template = `<div class="chart">${title}<canvas width="250" height="250"></canvas></div>`;
   const div = document.createElement('div');
   div.innerHTML = template;
   document.querySelector('.weapons').appendChild(div);
@@ -168,12 +204,12 @@ function draw(title, labels, data) {
     labels: labels,
     datasets: [
       {
-        label: title,
-        backgroundColor: 'rgba(255, 102, 0, 0.4)',
-        borderColor: 'rgba(255, 102, 0, 0.6)',
+        label: `${title} Shots To Kill`,
+        backgroundColor: 'rgba(255, 102, 0, 0.8)',
+        borderColor: 'rgba(255, 102, 0, 1)',
         borderWidth: 1,
-        hoverBackgroundColor: 'rgba(255, 102, 0, 0.6)',
-        hoverBorderColor: 'rgba(255, 102, 0, 0.9)',
+        hoverBackgroundColor: 'rgba(255, 102, 0, 0.5)',
+        hoverBorderColor: 'rgba(255, 102, 0, 0.6)',
         data: data,
       },
     ]
@@ -184,7 +220,7 @@ function draw(title, labels, data) {
       xAxes: [{
         ticks: {
           fontSize: 30,
-          fontColor: 'rgba(255, 255, 255, 1)',
+          fontColor: 'rgba(102, 102, 102, 1)',
         }
       }],
       yAxes: [{
@@ -193,16 +229,16 @@ function draw(title, labels, data) {
           labelString: 'Distance (meters)',
         },
         ticks: {
-          max: 60,
+          max: 100,
           min: 0,
         },
       }]
     }
   };
 
-  const weaponsChart = new Chart(ctx, {
+  return new Chart(ctx, {
     type: 'bar',
     data: chartData,
-    options: options
+    options: options,
   });
 }
