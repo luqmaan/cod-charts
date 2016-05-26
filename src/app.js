@@ -102,7 +102,7 @@ function parseWeapon(weapon, attachmentsById, attachments) {
 }
 
 const promiseAttachments = new Promise((resolve, reject) => {
-  d3.csv('/data/raw_attachments.csv')
+  d3.csv('data/raw_attachments.csv')
     .get((error, rows) => {
       if (error) {
         reject(error);
@@ -115,7 +115,7 @@ const promiseAttachments = new Promise((resolve, reject) => {
 });
 
 const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
-  d3.csv('/data/raw_weapons.csv')
+  d3.csv('data/raw_weapons.csv')
   .row((data) => {
     data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
     return data;
@@ -131,7 +131,7 @@ const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
   });
 });
 
-const promiseWeaponGroups = loadJson('/data/weapon_groups.json')
+const promiseWeaponGroups = loadJson('data/weapon_groups.json')
 .then((res) => {
   const weaponGroups = window.weaponGroups = res;
   weaponGroups.all = _.reduce(weaponGroups, (prev, current) => [...prev, ...current]);
