@@ -28,7 +28,7 @@ a:hover {
 }
 .chart {
     margin: 5px;
-    padding: 10px 10px 0px;
+    padding: 15px 15px 0px 5px;
     text-align: center;
     background: rgba(32, 32, 32, 1);
     flex-flow: row wrap;
@@ -45,9 +45,10 @@ a:hover {
 .chart .watermark {
     position: absolute;
     margin-top: 90px;
-    margin-left: -40px;
+    margin-left: -60px;
     color: rgba(255, 230, 230, 0.05);
     transform: rotate(-30deg);
+    letter-spacing: 5px;
 }
 .header {
     background: linear-gradient(
@@ -76,12 +77,12 @@ a:hover {
 }
 h1, h2 {
     color: rgba(255, 102, 0, 1);
+    font-weight: normal;
 }
 h1 {
     font-size: 20px;
     margin: 0 0 0 5px;
     display: flex;
-    font-weight: normal;
 }
 h1 span {
     color: #fff;
@@ -98,4 +99,11 @@ h2 {
 }
 .footer {
     margin: 20px;
+}
+.weaponGroupName {
+    color: rgba(205, 205, 205, 1);
+    margin-left: 10px;
+}
+select {
+    color: #fff;
 }

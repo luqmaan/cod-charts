@@ -1,3 +1,12 @@
+const weaponGroupNames = {
+  ar: 'Assault Rifles',
+  smg: 'Submachine Guns',
+  lmg: 'Light Machine Guns',
+  sniper: 'Sniper Rifles',
+  shotgun: 'Shotguns',
+  pistol: 'Pistols',
+};
+
 function load(path) {
   return new Promise((resolve, reject) => {
     const req = new XMLHttpRequest();
@@ -150,6 +159,9 @@ Promise.all([
   let weapons;
 
   function setup() {
+    const weaponGroupName = weaponGroupNames[document.querySelector('select#category').value];
+    document.querySelector('.weaponGroupName').innerHTML = `${weaponGroupName}`;
+
     document.querySelector('.loader').classList.remove('hidden');
     document.querySelector('.weapons').innerHTML = '';
     chartsById = {};
@@ -194,8 +206,6 @@ function draw(chartsById, weapons) {
   });
   document.querySelector('.loader').innerHTML = '';
 }
-
-Chart.defaults.global.defaultFontFamily = 'Oswald, sans-serif';
 
 function drawChart(title, labels, data) {
   const template = `
@@ -242,11 +252,13 @@ function drawChart(title, labels, data) {
       }],
       yAxes: [{
         scaleLabel: {
-          display: true,
+          display: false,
           labelString: 'Distance (meters)',
+          fontFamily: 'sans-serif',
         },
         ticks: {
-          max: 100,
+          maxTicksLimit: 5,
+          max: 70,
           min: 0,
         },
         gridLines: {
