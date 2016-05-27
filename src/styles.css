@@ -170,7 +170,7 @@ select {
     margin: 10px 0;
 }
 form.subscribe {
-    margin: 15px 0 10px auto;
+    margin: 15px auto 10px auto;
     padding: 10px;
     background: rgba(35, 30, 30, 1);
     display: flex;
@@ -178,6 +178,7 @@ form.subscribe {
     max-width: 500px;
     align-self: flex-end;
     flex: 1;
+    border: 1px solid rgba(50, 50, 50, 1);
 }
 form.subscribe div {
     display: flex;
