@@ -159,28 +159,28 @@ Promise.all([
   let weapons;
 
   function setup() {
-    const weaponGroupName = weaponGroupNames[document.querySelector('select#category').value];
-    document.querySelector('.weaponGroupName').innerHTML = `${weaponGroupName}`;
-
     document.querySelector('.loader').classList.remove('hidden');
     document.querySelector('.weapons').innerHTML = '';
     chartsById = {};
     weapons = filterWeapons(weaponsById, weaponGroups);
+    console.log('weapons', weapons)
     draw(chartsById, weapons);
     document.querySelector('.loader').classList.add('hidden');
   }
   setup();
 
   document.querySelector('select#category').onchange = setup;
+  document.querySelector('select#game').onchange = setup;
   document.querySelector('input#suppressor').onchange = () => draw(chartsById, weapons);
 })
 // .catch((err) => console.error(err));
 
 function filterWeapons(weaponsById, weaponGroups) {
   const category = document.querySelector('select#category').value;
+  const game = document.querySelector('select#game').value;
 
   return _.filter(weaponsById, (weapon) => (
-    weapon.WEAPONFILE.indexOf('_mp') !== -1 &&
+    weapon.WEAPONFILE.indexOf(game) !== -1 &&
     weapon.WEAPONFILE.indexOf('dualoptic_') === -1 &&
     weaponGroups[category].indexOf(weapon.displayName) !== -1
   ));
@@ -200,17 +200,20 @@ function draw(chartsById, weapons) {
       chart.update();
     }
     else {
-      chart = drawChart(weaponModel.name, labels, data);
+      chart = drawChart(weaponModel.name, weaponModel.id, labels, data);
       chartsById[weaponModel.id] = chart;
     }
   });
   document.querySelector('.loader').innerHTML = '';
 }
 
-function drawChart(title, labels, data) {
+function drawChart(title, weaponfile, labels, data) {
   const template = `
     <div class="chart">
-      <span class="title">${title}</span>
+      <div class="chart-header">
+        <span class="weaponfile">${weaponfile}</span>
+        <span class="title">${title}</span>
+      </div>
       <span class="watermark">CODCharts.com</span>
       <canvas width="250" height="250"></canvas>
     </div>

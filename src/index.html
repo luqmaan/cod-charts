@@ -14,7 +14,16 @@
     <body>
         <div class="app">
             <div class="header">
-                <h1>CODCharts.com <span>Black Ops 3 Weapon Stats</span></h1>
+                <div class="header-wrapper">
+                    <h1>CODCharts.com <span>Black Ops 3 Weapon Stats</span></h1>
+                </div>
+            </div>
+            <div class="main">
+                <div class="intro">
+                    <p>Have an idea for a new chart? Notice a broken chart? <a href="" target="_blank">Give us feedback</a>
+                    </p>
+                    <p>Data from <a href="https://docs.google.com/spreadsheets/d/1k7jVpX782zoAIDGqj61l1Yw5qoPf1QVHpM01mwa-tTI/edit#gid=0" target="_blank">Black Ops III Weapon Stats by Marvel4</a>. Last updated 5/26/16.</p>
+                </div>
                 <div class="options">
                     <form id="options">
                         <div>
@@ -29,6 +38,14 @@
                                     <option value="pistol">Pistols</option>
                                 </select>
                             </label>
+                            <label for="game">
+                                Game Mode
+                                <select name="game" id="game">
+                                    <option value="mp">Multiplayer</option>
+                                    <option value="zm">Zombies</option>
+                                    <option value="cp">Campaign</option>
+                                </select>
+                            </label>
                             <label for="suppressor">
                                 <span>Suppressor
                                 <input name="suppressor" id="suppressor" type="checkbox" />
@@ -36,15 +53,13 @@
                         </div>
                     </form>
                 </div>
-            </div>
-            <div class="main">
                 <div class="loader">Loading...</div>
                 <h2>Shots To Kill<span class="weaponGroupName"></span></h2>
                 <div class="weapons-container">
                     <div class="weapons">
                     </div>
                 </div>
-                <div class="footer">Data from <a href="https://docs.google.com/spreadsheets/d/1k7jVpX782zoAIDGqj61l1Yw5qoPf1QVHpM01mwa-tTI/edit#gid=0" target="_blank">Black Ops III Weapon Stats by Marvel4</a>. Last updated 5/26/16.</div>
+                <div class="footer"></div>
             </div>
         </div>
         <script src="app.js"></script>
