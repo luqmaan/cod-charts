@@ -163,7 +163,6 @@ Promise.all([
     document.querySelector('.weapons').innerHTML = '';
     chartsById = {};
     weapons = filterWeapons(weaponsById, weaponGroups);
-    console.log('weapons', weapons)
     draw(chartsById, weapons);
     document.querySelector('.loader').classList.add('hidden');
   }
@@ -204,15 +203,14 @@ function draw(chartsById, weapons) {
       chartsById[weaponModel.id] = chart;
     }
   });
-  document.querySelector('.loader').innerHTML = '';
 }
 
 function drawChart(title, weaponfile, labels, data) {
   const template = `
     <div class="chart">
       <div class="chart-header">
-        <span class="weaponfile">${weaponfile}</span>
         <span class="title">${title}</span>
+        <span class="weaponfile">${weaponfile}</span>
       </div>
       <span class="watermark">CODCharts.com</span>
       <canvas width="250" height="250"></canvas>

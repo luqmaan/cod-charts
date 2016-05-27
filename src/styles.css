@@ -28,7 +28,7 @@ a:hover {
 }
 .chart {
     margin: 5px;
-    padding: 5px 15px 0px 5px;
+    padding: 5px 5px 0px 0px;
     text-align: center;
     background: rgba(32, 32, 32, 1);
     flex-flow: row wrap;
@@ -37,16 +37,17 @@ a:hover {
 }
 .chart .chart-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 .chart .title {
     display: flex;
+    margin-left:15px;
+    flex: 1;
 }
 .chart .weaponfile {
     display: flex;
-    font-size: 10px;
+    font-size: 13px;
     color: rgba(100, 100, 100, 1);
-    margin-right: 10px;
     align-self: flex-end;
 }
 .chart canvas {
@@ -56,7 +57,7 @@ a:hover {
     position: absolute;
     margin-top: 90px;
     margin-left: -60px;
-    color: rgba(255, 230, 230, 0.05);
+    color: rgba(255, 230, 230, 0.2);
     transform: rotate(-30deg);
     letter-spacing: 5px;
 }
@@ -67,39 +68,58 @@ a:hover {
         rgba(42, 42, 42, 1)
     );
     background: rgba(20, 20, 20, 1);
-    box-shadow: 0px 2px 10px rgba(50, 30, 30, 0.1);
     min-width: 100vw;
-}
-.header-wrapper {
-    padding: 10px;
+    border-bottom: 1px solid rgba(210, 88, 6, 1);
 }
 .main {
-    padding: 10px;
+    padding: 0 15px;
     margin: 0 10px;
-}
-.options label {
-    color: rgba(210, 200, 200, 1);
-    border: 1px solid rgba(255, 102, 0, 1);
-    padding: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    display: inline-block;
 }
 .options form {
     margin: 10px 0 5px;
+    display: flex;
+    flex-direction: column;
+    flex-direction: wrap;
+}
+.options label {
+    color: rgba(210, 200, 200, 1);
+    border: 1px solid rgba(75, 70, 70, 1);
+    padding: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    justify-content: center;
+    height: 100px;
+}
+.options label select {
+    margin-left: 10px;
 }
 h1, h2 {
     color: rgba(255, 102, 0, 1);
 }
 h1 {
     font-size: 20px;
-    margin: 0 0 0 5px;
+    margin: 0;
     display: flex;
     font-weight: normal;
 }
-h1 span {
+h1 a {
+    text-decoration: none;
+}
+h1 .logo {
+    background: rgba(210, 88, 6, 1);
     color: #fff;
-    margin-left: 10px;
+    padding: 10px 30px 10px 20px;
+    display: flex;
+}
+h1 .logo:hover {
+    background-color: rgba(255, 102, 0, 1);
+}
+h1 .subtitle {
+    color: #fff;
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
 }
 h2 {
     border: 1px solid rgba(255, 102, 0, 1);
@@ -132,4 +152,54 @@ select {
 }
 .intro {
     margin: 30px 0;
+}
+form.subscribe {
+    padding: 10px;
+    background: rgba(35, 30, 30, 1);
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+}
+form.subscribe div {
+    display: flex;
+    flex: 1;
+    margin-bottom: 10px;
+    color: rgba(142, 142, 142, 1);
+}
+form.subscribe .inner {
+    display: flex;
+    border: 1px solid rgba(255, 102, 0, 1);
+}
+form.subscribe input, form.subscribe button {
+    display: flex;
+}
+form.subscribe input {
+    text-transform: uppercase;
+    padding: 5px 10px;
+    flex: 1;
+}
+button {
+    border: none;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: center;
+    font-style: normal;
+    display: inline-block;
+    text-align: center;
+    text-transform: uppercase;
+    position: relative;
+    cursor: pointer;
+    transition: 30ms background-color linear;
+    color: #fff;
+    background-color: rgba(210, 88, 6, 1);
+}
+button:hover {
+    background-color: rgba(255, 102, 0, 1);
+}
+button:focus {
+    background-color: rgba(169, 67, 0, 1);
+}
+::selection {
+  color: #fff;;
+  background-color: rgba(210, 88, 6, 1);
 }
