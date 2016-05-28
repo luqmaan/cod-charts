@@ -1,3 +1,7 @@
+// import Chart from 'chartjs' ;
+// import lodash from 'lodash';
+// import d3 from 'd3';
+
 const weaponGroupNames = {
   ar: 'Assault Rifles',
   smg: 'Submachine Guns',
@@ -29,7 +33,7 @@ function parseRangeUnits(units) {
   return {
     units: units,
     inches: units,
-    feet: units * 0.08334,
+    feet: Math.ceil(units * 0.08334),
     yards: units * 0.02778,
     centimeters: units * 2.54,
     meters: Math.floor(units * 0.0254),
@@ -107,6 +111,7 @@ function parseWeapon(weapon, attachmentsById, attachments) {
     name: weapon.name,
     id: weapon.WEAPONFILE,
     stats: stats,
+    weapon: weapon,
   };
 }
 
@@ -123,6 +128,8 @@ const promiseAttachments = new Promise((resolve, reject) => {
     });
 });
 
+let weaponsById = {};
+
 const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
   d3.csv('data/raw_weapons.csv')
   .row((data) => {
@@ -134,7 +141,7 @@ const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
       reject(error);
     }
 
-    const weaponsById = window.weaponsById = _.keyBy(rows, 'WEAPONFILE');
+    weaponsById = window.weaponsById = _.keyBy(rows, 'WEAPONFILE');
 
     resolve(weaponsById);
   });
@@ -181,6 +188,8 @@ function filterWeapons(weaponsById, weaponGroups) {
   return _.filter(weaponsById, (weapon) => (
     weapon.WEAPONFILE.indexOf(game) !== -1 &&
     weapon.WEAPONFILE.indexOf('dualoptic_') === -1 &&
+    weapon.WEAPONFILE.indexOf('dw_') === -1 &&
+    weapon.WEAPONFILE.indexOf('lh_') === -1 &&
     weaponGroups[category].indexOf(weapon.displayName) !== -1
   ));
 }
@@ -199,13 +208,13 @@ function draw(chartsById, weapons) {
       chart.update();
     }
     else {
-      chart = drawChart(weaponModel.name, weaponModel.id, labels, data);
+      chart = drawChart(weaponModel.name, weaponModel.id, labels, data, weaponModel);
       chartsById[weaponModel.id] = chart;
     }
   });
 }
 
-function drawChart(title, weaponfile, labels, data) {
+function drawChart(title, weaponfile, labels, data, weaponModel) {
   const template = `
     <div class="chart">
       <div class="chart-header">
@@ -232,6 +241,7 @@ function drawChart(title, weaponfile, labels, data) {
         hoverBackgroundColor: 'rgba(255, 102, 0, 0.5)',
         hoverBorderColor: 'rgba(255, 102, 0, 0.6)',
         data: data,
+        weaponModel: weaponModel,
       },
     ]
   };
@@ -266,7 +276,41 @@ function drawChart(title, weaponfile, labels, data) {
           color: 'rgba(52, 52, 52, 1)',
         },
       }]
-    }
+    },
+    tooltips: {
+      // custom: function() {
+      //   console.log('tooltip', arguments)
+      // },
+      backgroundColor: 'rgba(0,0,0,1)',
+      bodyFontSize: 15,
+      callbacks: {
+        title: function(tooltipItem, data) {
+          console.log('arguments', arguments)
+          const stk = tooltipItem[0].xLabel;
+          const weaponModel = data.datasets[tooltipItem[0].datasetIndex].weaponModel;
+          const stats = weaponModel.stats[tooltipItem[0].index];
+          return `${stk} Hits`;
+        },
+        beforeBody: function(tooltipItem, data) {
+          const weaponModel = data.datasets[tooltipItem[0].datasetIndex].weaponModel;
+          const stats = weaponModel.stats[tooltipItem[0].index];
+          console.log(weaponModel)
+          return [
+            `${stats.range.meters}m`,
+            `${stats.range.feet}ft`,
+          ].join('\n');
+        },
+        label: function(tooltipItem, data) {
+          console.log(tooltipItem)
+          const weaponModel = data.datasets[tooltipItem.datasetIndex].weaponModel;
+          const stats = weaponModel.stats[tooltipItem.index];
+          console.log(weaponModel)
+          return [
+            `${stats.damage} Damage`,
+          ].join('\n');
+        }
+      }
+    },
   };
 
   return new Chart(ctx, {
