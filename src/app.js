@@ -3,6 +3,7 @@ import './styles/styles.css';
 import Chart from 'Chart.js' ;
 import lodash from 'lodash';
 import d3 from 'd3';
+import Fingerprint2 from 'fingerprintjs2';
 import raw_attachments from 'data/raw_attachments.csv';
 import raw_weapons from 'data/raw_weapons.csv';
 import weaponGroups from 'data/weapon_groups.json';
@@ -263,3 +264,5 @@ function init() {
 }
 
 init();
+
+new Fingerprint2().get((result) => ga('set', 'userId', result));
