@@ -1,13 +1,11 @@
+import './styles/styles.scss';
+
 import Chart from 'Chart.js' ;
 import lodash from 'lodash';
 import d3 from 'd3';
 import raw_attachments from 'data/raw_attachments.csv';
 import raw_weapons from 'data/raw_weapons.csv';
 import weaponGroups from 'data/weapon_groups.json';
-
-window.raw_attachments = raw_attachments;
-
-require("./styles/styles.scss");
 
 weaponGroups.all = _.reduce(weaponGroups, (prev, current) => [...prev, ...current]);
 
@@ -19,7 +17,6 @@ const weaponGroupNames = {
   shotgun: 'Shotguns',
   pistol: 'Pistols',
 };
-console.log('chart', Chart)
 
 function parseRangeUnits(units) {
   return {
@@ -155,7 +152,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
   div.innerHTML = template;
   document.querySelector('.weapons').appendChild(div);
   const ctx = div.querySelector('canvas');
-  console.log('div', div)
 
   const chartData = {
     labels: labels,
@@ -209,7 +205,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
       bodyFontSize: 15,
       callbacks: {
         title: function(tooltipItem, data) {
-          console.log('arguments', arguments)
           const stk = tooltipItem[0].xLabel;
           const weaponModel = data.datasets[tooltipItem[0].datasetIndex].weaponModel;
           const stats = weaponModel.stats[tooltipItem[0].index];
@@ -218,17 +213,14 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
         beforeBody: function(tooltipItem, data) {
           const weaponModel = data.datasets[tooltipItem[0].datasetIndex].weaponModel;
           const stats = weaponModel.stats[tooltipItem[0].index];
-          console.log(weaponModel)
           return [
             `${stats.range.meters}m`,
             `${stats.range.feet}ft`,
           ].join('\n');
         },
         label: function(tooltipItem, data) {
-          console.log(tooltipItem)
           const weaponModel = data.datasets[tooltipItem.datasetIndex].weaponModel;
           const stats = weaponModel.stats[tooltipItem.index];
-          console.log(weaponModel)
           return [
             `${stats.damage} Damage`,
           ].join('\n');
@@ -236,8 +228,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
       }
     },
   };
-
-  console.log(chartData)
 
   return new Chart(ctx, {
     type: 'bar',
