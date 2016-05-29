@@ -1,6 +1,15 @@
-// import Chart from 'chartjs' ;
-// import lodash from 'lodash';
-// import d3 from 'd3';
+import Chart from 'Chart.js' ;
+import lodash from 'lodash';
+import d3 from 'd3';
+import raw_attachments from 'data/raw_attachments.csv';
+import raw_weapons from 'data/raw_weapons.csv';
+import weaponGroups from 'data/weapon_groups.json';
+
+window.raw_attachments = raw_attachments;
+
+require("./styles/styles.scss");
+
+weaponGroups.all = _.reduce(weaponGroups, (prev, current) => [...prev, ...current]);
 
 const weaponGroupNames = {
   ar: 'Assault Rifles',
@@ -10,24 +19,7 @@ const weaponGroupNames = {
   shotgun: 'Shotguns',
   pistol: 'Pistols',
 };
-
-function load(path) {
-  return new Promise((resolve, reject) => {
-    const req = new XMLHttpRequest();
-    req.overrideMimeType('application/json');
-    req.open('GET', path, true);
-    req.onreadystatechange = function () {
-      if (req.readyState == 4 && req.status == '200') {
-        resolve(req.responseText);
-      }
-    }
-    req.send(null);
-  });
-}
-
-function loadJson(path) {
-  return load(path).then((res) => JSON.parse(res));
-}
+console.log('chart', Chart)
 
 function parseRangeUnits(units) {
   return {
@@ -115,72 +107,6 @@ function parseWeapon(weapon, attachmentsById, attachments) {
   };
 }
 
-const promiseAttachments = new Promise((resolve, reject) => {
-  d3.csv('data/raw_attachments.csv')
-    .get((error, rows) => {
-      if (error) {
-        reject(error);
-      }
-
-      const attachmentsById = window.attachmentsById = _.keyBy(rows, 'ATTACHMENTFILE');
-
-      resolve(attachmentsById);
-    });
-});
-
-let weaponsById = {};
-
-const promiseWeapons = (attachmentsById) => new Promise((resolve, reject) => {
-  d3.csv('data/raw_weapons.csv')
-  .row((data) => {
-    data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
-    return data;
-  })
-  .get((error, rows) => {
-    if (error) {
-      reject(error);
-    }
-
-    weaponsById = window.weaponsById = _.keyBy(rows, 'WEAPONFILE');
-
-    resolve(weaponsById);
-  });
-});
-
-const promiseWeaponGroups = loadJson('data/weapon_groups.json')
-.then((res) => {
-  const weaponGroups = window.weaponGroups = res;
-  weaponGroups.all = _.reduce(weaponGroups, (prev, current) => [...prev, ...current]);
-  return weaponGroups;
-});
-
-Promise.all([
-  promiseAttachments.then(attachments => promiseWeapons(attachments)),
-  promiseWeaponGroups,
-])
-.then((args) => {
-  const weaponsById = args[0];
-  const weaponGroups = args[1];
-
-  let chartsById;
-  let weapons;
-
-  function setup() {
-    document.querySelector('.loader').classList.remove('hidden');
-    document.querySelector('.weapons').innerHTML = '';
-    chartsById = {};
-    weapons = filterWeapons(weaponsById, weaponGroups);
-    draw(chartsById, weapons);
-    document.querySelector('.loader').classList.add('hidden');
-  }
-  setup();
-
-  document.querySelector('select#category').onchange = setup;
-  document.querySelector('select#game').onchange = setup;
-  document.querySelector('input#suppressor').onchange = () => draw(chartsById, weapons);
-})
-// .catch((err) => console.error(err));
-
 function filterWeapons(weaponsById, weaponGroups) {
   const category = document.querySelector('select#category').value;
   const game = document.querySelector('select#game').value;
@@ -229,6 +155,7 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
   div.innerHTML = template;
   document.querySelector('.weapons').appendChild(div);
   const ctx = div.querySelector('canvas');
+  console.log('div', div)
 
   const chartData = {
     labels: labels,
@@ -278,9 +205,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
       }]
     },
     tooltips: {
-      // custom: function() {
-      //   console.log('tooltip', arguments)
-      // },
       backgroundColor: 'rgba(0,0,0,1)',
       bodyFontSize: 15,
       callbacks: {
@@ -313,9 +237,39 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
     },
   };
 
+  console.log(chartData)
+
   return new Chart(ctx, {
     type: 'bar',
     data: chartData,
     options: options,
   });
 }
+
+
+function init() {
+  let chartsById = window.chartsById = {};
+  let weapons;
+  let weaponsById = window.attachmentsById = _.keyBy(d3.csv.parse(raw_weapons, (data) => {
+    data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
+    return data;
+  }), 'WEAPONFILE');
+
+  const attachmentsById = window.attachmentsById = _.keyBy(d3.csv.parse(raw_attachments), 'ATTACHMENTFILE');
+
+  function setup() {
+    chartsById = {};
+    document.querySelector('.loader').classList.remove('hidden');
+    document.querySelector('.weapons').innerHTML = '';
+    weapons = filterWeapons(weaponsById, weaponGroups);
+    draw(chartsById, weapons);
+    document.querySelector('.loader').classList.add('hidden');
+  }
+  setup();
+
+  document.querySelector('select#category').onchange = setup;
+  document.querySelector('select#game').onchange = setup;
+  document.querySelector('input#suppressor').onchange = () => draw(chartsById, weapons);
+}
+
+init();

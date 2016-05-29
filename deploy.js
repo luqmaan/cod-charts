@@ -9,7 +9,7 @@ const options = {
   },
 };
 
-ghpages.publish(path.join(__dirname, 'dist'), options, function (err) {
+ghpages.publish(path.join(__dirname, 'src'), options, function (err) {
   if (err) {
     console.error(err);
   }

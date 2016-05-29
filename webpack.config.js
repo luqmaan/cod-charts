@@ -5,7 +5,7 @@ var path = require('path');
 
 module.exports = {
   devtool: 'cheap-eval-source-map',
-  entry: __dirname + '/src/index.js',
+  entry: __dirname + '/src/app.js',
   output: {
     path: __dirname + '/dist',
     filename: 'bundle.js',
@@ -22,13 +22,9 @@ module.exports = {
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel' },
       {
         test: /\.scss$/,
-        loaders: [
-          'style?sourceMap',
-          'css?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-          'postcss-loader',
-          'sass',
-        ],
+        loaders: ["style", "css", "sass"]
       },
+      { test: /\.csv$/, loader: 'raw' },
     ],
   },
   postcss: [

@@ -1,3 +1,6 @@
+@import 'normalize';
+@import 'loader';
+
 body {
     background: rgba(0, 0, 0, 1);
     font-family: 'Roboto', sans-serif;
@@ -19,8 +22,7 @@ a:hover {
 .weapons-container {
     border: 1px solid rgba(255, 102, 0, 1);
     padding: 10px;
-    flex-shrink:
-}
+  }
 .weapons {
     display: flex;
     flex-flow: row wrap;
@@ -56,7 +58,7 @@ a:hover {
 .chart .watermark {
     position: absolute;
     margin-top: 90px;
-    margin-left: -60px;
+    margin-left: -90px;
     color: rgba(255, 230, 230, 0.2);
     transform: rotate(-30deg);
     letter-spacing: 5px;
