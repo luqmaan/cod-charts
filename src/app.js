@@ -140,101 +140,68 @@ function draw(chartsById, weapons) {
 
 function drawChart(title, weaponfile, labels, data, weaponModel) {
   const template = `
-    <div class="chart">
-      <div class="chart-header">
-        <span class="title">${title}</span>
-        <span class="weaponfile">${weaponfile}</span>
-      </div>
-      <span class="watermark">CODCharts.com</span>
-      <canvas width="250" height="250"></canvas>
+  <div class="chart">
+    <div class="chart-header">
+      <span class="title">${title}</span>
+      <span class="weaponfile">${weaponfile}</span>
     </div>
+    <div class="chart-inner">
+    </div>
+  </div>
   `;
   const div = document.createElement('div');
   div.innerHTML = template;
   document.querySelector('.weapons').appendChild(div);
-  const ctx = div.querySelector('canvas');
+  const ctx = div.querySelector('.chart-inner');
 
-  const chartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: `${title} Shots To Kill`,
-        backgroundColor: 'rgba(255, 102, 0, 0.8)',
-        borderColor: 'rgba(255, 102, 0, 1)',
-        borderWidth: 1,
-        hoverBackgroundColor: 'rgba(255, 102, 0, 0.5)',
-        hoverBorderColor: 'rgba(255, 102, 0, 0.6)',
-        data: data,
-        weaponModel: weaponModel,
-      },
-    ]
-  };
+  console.log('weaponModel', weaponModel.stats.length)
+  const colors = ['rgba(255, 102, 0, 1)', 'rgba(155, 102, 0, 1)', 'rgba(55, 102, 0, 1)']
 
-  const options = {
-    legend: {
-      display: false,
-    },
-    scales: {
-      paddingLeft: 30,
-      xAxes: [{
-        ticks: {
-          fontSize: 20,
-          fontColor: 'rgba(102, 102, 102, 1)',
-        },
-        gridLines: {
-          display: false
-        },
-      }],
-      yAxes: [{
-        scaleLabel: {
-          display: false,
-          labelString: 'Distance (meters)',
-          fontFamily: 'sans-serif',
-        },
-        ticks: {
-          maxTicksLimit: 5,
-          max: 70,
-          min: 0,
-        },
-        gridLines: {
-          color: 'rgba(52, 52, 52, 1)',
-        },
-      }]
-    },
-    tooltips: {
-      backgroundColor: 'rgba(0,0,0,1)',
-      bodyFontSize: 15,
-      callbacks: {
-        title: function(tooltipItem, data) {
-          const stk = tooltipItem[0].xLabel;
-          const weaponModel = data.datasets[tooltipItem[0].datasetIndex].weaponModel;
-          const stats = weaponModel.stats[tooltipItem[0].index];
-          return `${stk} Hits`;
-        },
-        beforeBody: function(tooltipItem, data) {
-          const weaponModel = data.datasets[tooltipItem[0].datasetIndex].weaponModel;
-          const stats = weaponModel.stats[tooltipItem[0].index];
-          return [
-            `${stats.range.meters}m`,
-            `${stats.range.feet}ft`,
-          ].join('\n');
-        },
-        label: function(tooltipItem, data) {
-          const weaponModel = data.datasets[tooltipItem.datasetIndex].weaponModel;
-          const stats = weaponModel.stats[tooltipItem.index];
-          return [
-            `${stats.damage} Damage`,
-          ].join('\n');
-        }
-      }
-    },
-  };
+  const maxRange = _.max(weaponModel.stats.map(wm => wm.range.meters * 2));
+  const barWidth = Math.max(200, maxRange + 50);
 
-  return new Chart(ctx, {
-    type: 'bar',
-    data: chartData,
-    options: options,
-  });
+  const svg = d3.select(ctx)
+    .append('svg')
+    .attr('height', 120)
+    .attr('width', barWidth)
+    .append('g');
+
+  svg.append('g')
+    .append('rect')
+    .attr('fill', 'rgba(148, 148, 148, 1)')
+    .attr('width', barWidth)
+    .attr('height', 20)
+    .attr('x', 10)
+    .attr('y', 10);
+
+  const barGroup = svg.append('g');
+
+  var updateSel = barGroup.selectAll("rect")
+    .data(_.reverse(weaponModel.stats));
+
+  /* operate on old elements only */
+  updateSel.attr()
+
+  /* operate on new elements only */
+  const innerBarGroup = updateSel.enter()
+    .append("g");
+
+  innerBarGroup.append('rect')
+    .attr('fill', (d, i) => colors[i])
+    .attr('width', d => d.range.meters * 2)
+    .attr('height', 20)
+    .attr('x', 10)
+    .attr('y', 10);
+
+  innerBarGroup.append('text')
+    .text(d => d.range.meters + 'm')
+    .attr('height', 10)
+    .attr('fill', 'white')
+    .attr('x', d => d.range.meters *2)
+    .attr('y', 50)
+
+  updateSel.attr(/* operate on old and new elements */)
+  updateSel.exit().remove() /* complete the enter-update-exit pattern */
 }
 
 

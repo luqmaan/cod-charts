@@ -25,43 +25,34 @@ a:hover {
   }
 .weapons {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column nowrap;
     justify-content: center;
 }
 .chart {
     margin: 5px;
-    padding: 5px 5px 0px 0px;
     text-align: center;
     background: rgba(32, 32, 32, 1);
-    flex-flow: row wrap;
-    flex-direction: row;
+    display: flex;
+    flex: 1;
     justify-content: center;
 }
 .chart .chart-header {
-    display: flex;
-    justify-content: flex-start;
 }
 .chart .title {
-    display: flex;
-    margin-left:15px;
-    flex: 1;
+}
+.chart-inner {
+  display: flex;
+  margin: auto;
+  justify-content: flex-end;
+  flex-grow: 1;
+
 }
 .chart .weaponfile {
-    display: flex;
     font-size: 13px;
     color: rgba(150, 150, 150, 1);
-    align-self: flex-end;
 }
 .chart canvas {
     display: flex;
-}
-.chart .watermark {
-    position: absolute;
-    margin-top: 90px;
-    margin-left: -90px;
-    color: rgba(255, 230, 230, 0.2);
-    transform: rotate(-30deg);
-    letter-spacing: 5px;
 }
 .header {
     background: linear-gradient(
