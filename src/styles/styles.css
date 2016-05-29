@@ -30,6 +30,7 @@ a:hover {
 }
 .chart {
     margin: 5px;
+    padding: 5px;
     text-align: center;
     background: rgba(32, 32, 32, 1);
     display: flex;

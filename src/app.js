@@ -138,6 +138,7 @@ function draw(chartsById, weapons) {
   });
 }
 
+
 function drawChart(title, weaponfile, labels, data, weaponModel) {
   const template = `
   <div class="chart">
@@ -168,36 +169,64 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
 
   svg.append('g')
     .append('rect')
-    .attr('fill', 'rgba(148, 148, 148, 1)')
+    .attr('fill', 'rgba(90, 90, 90, 1)')
     .attr('width', barWidth)
     .attr('height', 20)
-    .attr('x', 10)
-    .attr('y', 10);
+    .attr('transform', 'translate(10, 10)');
 
-  const barGroup = svg.append('g');
+  const barsGroup = svg.append('g');
 
-  var updateSel = barGroup.selectAll("rect")
-    .data(_.reverse(weaponModel.stats));
+  var updateSel = barsGroup.selectAll('rect')
+    .data(weaponModel.stats);
 
   /* operate on old elements only */
   updateSel.attr()
 
   /* operate on new elements only */
-  const innerBarGroup = updateSel.enter()
-    .append("g");
+  const bars = updateSel.enter()
+    .append('g');
 
-  innerBarGroup.append('rect')
-    .attr('fill', (d, i) => colors[i])
-    .attr('width', d => d.range.meters * 2)
+
+  function getSTKBarWidth(data, index) {
+    return data.range.meters * 2;
+  }
+
+  const xOffsets = [0];
+  function getSTKBarOffsetX(data, index) {
+    if (xOffsets.length - 1 <= index) {
+      xOffsets.push(data.range.meters * 2)
+    }
+    console.log(xOffsets)
+    return xOffsets[index];
+  }
+
+  function getSTKTextOffsetX(data, index) {
+    return getSTKBarOffsetX(data, index) + ( getSTKBarWidth(data, index) / 2);
+  }
+
+  const bar = bars.append('g')
+    .attr('width', getSTKBarWidth)
     .attr('height', 20)
-    .attr('x', 10)
-    .attr('y', 10);
+    .attr('transform', 'translate(10, 10)')
 
-  innerBarGroup.append('text')
+  bar.append('rect')
+    .attr('fill', (d, i) => colors[i])
+    .attr('width', getSTKBarWidth)
+    .attr('x', getSTKBarOffsetX)
+    .attr('height', 20)
+
+  bar.append('text')
+    .text(d => d.stk)
+    .attr('fill', 'white')
+    .attr('x', getSTKTextOffsetX)
+    .attr('y', 15)
+    .attr('text-anchor', 'middle')
+
+  bars.append('text')
     .text(d => d.range.meters + 'm')
     .attr('height', 10)
     .attr('fill', 'white')
-    .attr('x', d => d.range.meters *2)
+    .attr('x', d => d.range.meters * 2)
     .attr('y', 50)
 
   updateSel.attr(/* operate on old and new elements */)
