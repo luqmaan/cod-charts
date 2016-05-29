@@ -1,4 +1,4 @@
-import './styles/styles.scss';
+import './styles/styles.css';
 
 import Chart from 'Chart.js' ;
 import lodash from 'lodash';

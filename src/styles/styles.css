@@ -1,5 +1,5 @@
-@import 'normalize';
-@import 'loader';
+@import './normalize.css';
+@import './loader.css';
 
 body {
     background: rgba(0, 0, 0, 1);
@@ -181,6 +181,7 @@ form.subscribe {
     align-self: flex-end;
     flex: 1;
     border: 1px solid rgba(50, 50, 50, 1);
+    min-width: 250px;
 }
 form.subscribe div {
     display: flex;

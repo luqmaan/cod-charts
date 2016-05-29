@@ -1,7 +1,8 @@
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var cssnano = require('cssnano');
 var path = require('path');
+var precss = require('precss');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
   devtool: 'cheap-eval-source-map',
@@ -21,27 +22,14 @@ module.exports = {
       { test: /\.json$/, loader: 'json' },
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel' },
       {
-        test: /\.scss$/,
-        loaders: ["style", "css", "sass"]
+        test: /\.css$/,
+        loaders: ['style-loader', 'css-loader', 'postcss-loader'],
       },
       { test: /\.csv$/, loader: 'raw' },
     ],
   },
-  postcss: [
-    cssnano({
-      sourcemap: true,
-      autoprefixer: {
-        add: true,
-        remove: true,
-        browsers: ['last 2 versions'],
-      },
-      discardComments: {
-        removeAll: true,
-      },
-    }),
-  ],
-  sassLoader: {
-    includePaths: [path.resolve(__dirname, 'src/styles')],
+  postcss: function() {
+    return [precss, autoprefixer];
   },
 
   plugins: [

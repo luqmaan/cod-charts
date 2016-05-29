@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "webpack-dev-server --progress --port 3333 --host 0.0.0.0 --history-api-fallback",
-    "build": "rm -rf dist/* && ls -Falth && NODE_ENV=production ./node_modules/.bin/webpack --config ./webpack.production.config.js --progress",
-    "deploy": "npm run build && node deploy.js"
+    "build": "rm -rf dist/* && NODE_ENV=production ./node_modules/.bin/webpack --config ./webpack.production.config.js --progress",
+    "deploy": "npm run build && cp src/CNAME dist && node deploy"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "cssnano": "^3.6.2",
     "d3": "^3.5.17",
     "lodash": "^4.13.1",
+    "precss": "^1.4.0",
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1"

@@ -1,15 +1,15 @@
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var cssnano = require('cssnano');
 var path = require('path');
+var precss = require('precss');
+var autoprefixer = require('autoprefixer');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  devtool: 'cheap-eval-source-map',
   entry: __dirname + '/src/app.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js',
-    publicPath: '/',
+    filename: '[name]-[hash].js',
   },
   resolve: {
     root: path.resolve(__dirname, 'src'),
@@ -21,40 +21,31 @@ module.exports = {
       { test: /\.json$/, loader: 'json' },
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel' },
       {
-        test: /\.scss$/,
-        loaders: ["style", "css", "sass"]
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader', 'postcss-loader'),
       },
       { test: /\.csv$/, loader: 'raw' },
     ],
   },
-  postcss: [
-    cssnano({
-      sourcemap: true,
-      autoprefixer: {
-        add: true,
-        remove: true,
-        browsers: ['last 2 versions'],
-      },
-      discardComments: {
-        removeAll: true,
+  postcss: function() {
+    return [precss, autoprefixer];
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"',
       },
     }),
-  ],
-  sassLoader: {
-    includePaths: [path.resolve(__dirname, 'src/styles')],
-  },
-
-  plugins: [
     new HtmlWebpackPlugin({
       template: __dirname + '/src/index.tmpl.html',
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        unused: true,
+        dead_code: true,
+      },
+    }),
+    new ExtractTextPlugin('[name]-[hash].css'),
   ],
-
-  devServer: {
-    colors: true,
-    historyApiFallback: true,
-    inline: true,
-    hot: true,
-  },
 };
