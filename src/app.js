@@ -98,10 +98,10 @@ function parseWeapon(weapon, attachmentsById, attachments) {
   }, []);
 
   return {
+    ...weapon,
     name: weapon.name,
     id: weapon.WEAPONFILE,
     stats: stats,
-    weapon: weapon,
   };
 }
 
@@ -128,23 +128,21 @@ function draw(chartsById, weapons) {
 
     let chart = chartsById[weaponModel.id];
     if (chart) {
-      chart.data.datasets[0].data = data;
-      chart.update();
+      drawChart(weaponModel, chart);
     }
     else {
-      chart = drawChart(weaponModel.name, weaponModel.id, labels, data, weaponModel);
+      chart = drawChart(weaponModel);
       chartsById[weaponModel.id] = chart;
     }
   });
 }
 
-
-function drawChart(title, weaponfile, labels, data, weaponModel) {
+function setupChart(weaponModel) {
   const template = `
   <div class="chart">
     <div class="chart-header">
-      <span class="title">${title}</span>
-      <span class="weaponfile">${weaponfile}</span>
+      <span class="title">${weaponModel.name}</span>
+      <span class="weaponfile">${weaponModel.WEAPONFILE}</span>
     </div>
     <div class="chart-body">
     </div>
@@ -169,35 +167,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
     .attr('fill', 'rgba(90, 90, 90, 1)')
     .attr('width', barWidth)
     .attr('height', 20)
-    .attr('transform', 'translate(10, 10)');
-
-  const barsGroup = svg.append('g');
-
-  var updateSel = barsGroup.selectAll('rect')
-    .data(weaponModel.stats);
-
-  /* operate on old elements only */
-  updateSel.attr()
-
-  /* operate on new elements only */
-  const bars = updateSel.enter()
-    .append('g');
-
-  function getSTKBarWidth(data, index) {
-    return data.range.meters * 2;
-  }
-
-  const xOffsets = [0];
-  function getSTKBarOffsetX(data, index) {
-    if (xOffsets.length - 1 <= index) {
-      xOffsets.push(data.range.meters * 2)
-    }
-    return xOffsets[index];
-  }
-
-  function getSTKTextOffsetX(data, index) {
-    return getSTKBarOffsetX(data, index) + ( getSTKBarWidth(data, index) / 2);
-  }
 
   const scale = d3.scale.linear()
     .domain([0, 100])
@@ -207,60 +176,94 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
       .scale(scale)
       .innerTickSize(10)
       .outerTickSize(2)
-      .tickValues([5, 15, 30, 50, 70, 90, 100])
-    // console.log('xAxis', xAxis(10))
+      .tickValues([5, 15, 30, 50, 70, 90, 120])
 
-  bars.append("g")
+  svg.append("g")
     .attr('class', 'xaxis axis')
-    .attr("transform", "translate(10, 30)")
+    .attr("transform", "translate(0, 20)")
     .call(xAxis)
     .selectAll('text')
 
-  const colors = [
-    'rgba(255, 198, 54, 1)',
-    'rgba(255, 173, 54, 1)',
-    'rgba(255, 149, 54, 1)',
-    'rgba(250, 114, 53, 1)',
-    'rgba(219, 58, 47, 1)',
-    'rgba(158, 34, 51, 1)',
-  ];
+  const barsGroup = svg.append('g')
+    .attr('class', 'barsGroup')
 
-  const bar = bars.append('g')
-    .attr('width', getSTKBarWidth)
-    .attr('height', 20)
-    .attr('transform', 'translate(10, 10)')
+  return svg;
+}
 
-  bar.append('rect')
-    .attr('fill', (d, i) => colors[d.stk - 1])
-    .attr('width', getSTKBarWidth)
-    .attr('x', getSTKBarOffsetX)
-    .attr('height', 20)
 
-  bar.append('text')
+const stkColors = [
+  'rgba(255, 198, 54, 1)',
+  'rgba(255, 173, 54, 1)',
+  'rgba(255, 149, 54, 1)',
+  'rgba(250, 114, 53, 1)',
+  'rgba(219, 58, 47, 1)',
+  'rgba(158, 34, 51, 1)',
+];
+
+function drawChart(weaponModel, svg) {
+  if (!svg) {
+    svg = setupChart(weaponModel);
+  }
+
+
+  function getSTKBarWidth(d, index) {
+    return d.range.meters * 2;
+  }
+
+  const xOffsets = [0];
+  function getSTKBarOffsetX(d, index) {
+    console.log('offsetX', d.stk, index)
+    if (xOffsets.length - 1 <= index) {
+      xOffsets.push(d.range.meters * 2)
+    }
+    return xOffsets[index];
+  }
+
+  function getSTKTextOffsetX(data, index) {
+    return getSTKBarOffsetX(data, index) + (getSTKBarWidth(data, index) / 2);
+  }
+
+  const barsGroup = svg.select('.barsGroup')
+
+  // DATA JOIN
+  const stkBars = barsGroup.selectAll('rect')
+    .data(weaponModel.stats, d => d.stk);
+
+  stkBars.enter()
+    .append('rect')
+      .attr('height', 20)
+      .attr('y', 0)
+
+  stkBars.transition()
+      .duration(750)
+        .attr('x', getSTKBarOffsetX)
+        .attr('width', getSTKBarWidth)
+        .attr('fill', d => stkColors[d.stk - 1])
+
+  const stkText = barsGroup.selectAll('text')
+    .data(weaponModel.stats, d => d.stk);
+
+  stkText.enter()
+    .append('text')
     .text(d => d.stk)
-    .attr('fill', 'rgba(0,0,0,1)')
-    .attr('x', getSTKTextOffsetX)
-    .attr('y', 16)
     .attr('text-anchor', 'middle')
-  //
-  // bars.append('text')
-  //   .text(d => d.range.meters + 'm')
-  //   .attr('height', 10)
-  //   .attr('fill', 'white')
-  //   .attr('x', d => d.range.meters * 2)
-  //   .attr('y', 50)
-  //   .attr('text-anchor', 'start')
-  //   .attr('ali');
+    .attr('y', 16)
+    .attr('fill', 'black')
 
-  updateSel.attr(/* operate on old and new elements */)
-  updateSel.exit().remove() /* complete the enter-update-exit pattern */
+  stkText
+    .transition()
+    .duration(750)
+    .attr('x', getSTKTextOffsetX)
+    .attr('width', getSTKBarWidth)
+
+  return svg;
 }
 
 
 function init() {
   let chartsById = window.chartsById = {};
   let weapons;
-  let weaponsById = window.attachmentsById = _.keyBy(d3.csv.parse(raw_weapons, (data) => {
+  let weaponsById = window.weaponsById = _.keyBy(d3.csv.parse(raw_weapons, (data) => {
     data.name = data.WEAPONFILE.indexOf('dualoptic_') === 0 ? `${data.displayName} Varix` : data.displayName;
     return data;
   }), 'WEAPONFILE');

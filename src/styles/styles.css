@@ -50,8 +50,12 @@ a:hover {
   flex-grow: 1;
 }
 .chart .weaponfile {
-    font-size: 13px;
+    font-size: 12px;
     color: rgba(150, 150, 150, 1);
+    text-transform: uppercase;
+}
+.axis path {
+  fill: none;
 }
 .axis line {
     stroke: rgba(150, 150, 150, 1);
@@ -224,4 +228,17 @@ button:focus {
 ::selection {
   color: #fff;;
   background-color: rgba(210, 88, 6, 1);
+}
+
+
+.enter {
+  fill: green;
+}
+
+.update {
+  fill: blue;
+}
+
+.exit {
+  fill: brown;
 }
