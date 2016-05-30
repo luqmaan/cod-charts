@@ -146,24 +146,21 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
       <span class="title">${title}</span>
       <span class="weaponfile">${weaponfile}</span>
     </div>
-    <div class="chart-inner">
+    <div class="chart-body">
     </div>
   </div>
   `;
   const div = document.createElement('div');
   div.innerHTML = template;
   document.querySelector('.weapons').appendChild(div);
-  const ctx = div.querySelector('.chart-inner');
-
-  console.log('weaponModel', weaponModel.stats.length)
-  const colors = ['rgba(255, 102, 0, 1)', 'rgba(155, 102, 0, 1)', 'rgba(55, 102, 0, 1)']
+  const ctx = div.querySelector('.chart-body');
 
   const maxRange = _.max(weaponModel.stats.map(wm => wm.range.meters * 2));
-  const barWidth = Math.max(200, maxRange + 50);
+  const barWidth = Math.max(200, maxRange);
 
   const svg = d3.select(ctx)
     .append('svg')
-    .attr('height', 120)
+    .attr('height', 60)
     .attr('width', barWidth)
     .append('g');
 
@@ -186,7 +183,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
   const bars = updateSel.enter()
     .append('g');
 
-
   function getSTKBarWidth(data, index) {
     return data.range.meters * 2;
   }
@@ -196,7 +192,6 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
     if (xOffsets.length - 1 <= index) {
       xOffsets.push(data.range.meters * 2)
     }
-    console.log(xOffsets)
     return xOffsets[index];
   }
 
@@ -204,30 +199,58 @@ function drawChart(title, weaponfile, labels, data, weaponModel) {
     return getSTKBarOffsetX(data, index) + ( getSTKBarWidth(data, index) / 2);
   }
 
+  const scale = d3.scale.linear()
+    .domain([0, 100])
+    .range([0, 200])
+
+  const xAxis = d3.svg.axis()
+      .scale(scale)
+      .innerTickSize(10)
+      .outerTickSize(2)
+      .tickValues([5, 15, 30, 50, 70, 90, 100])
+    // console.log('xAxis', xAxis(10))
+
+  bars.append("g")
+    .attr('class', 'xaxis axis')
+    .attr("transform", "translate(10, 30)")
+    .call(xAxis)
+    .selectAll('text')
+
+  const colors = [
+    'rgba(255, 198, 54, 1)',
+    'rgba(255, 173, 54, 1)',
+    'rgba(255, 149, 54, 1)',
+    'rgba(250, 114, 53, 1)',
+    'rgba(219, 58, 47, 1)',
+    'rgba(158, 34, 51, 1)',
+  ];
+
   const bar = bars.append('g')
     .attr('width', getSTKBarWidth)
     .attr('height', 20)
     .attr('transform', 'translate(10, 10)')
 
   bar.append('rect')
-    .attr('fill', (d, i) => colors[i])
+    .attr('fill', (d, i) => colors[d.stk - 1])
     .attr('width', getSTKBarWidth)
     .attr('x', getSTKBarOffsetX)
     .attr('height', 20)
 
   bar.append('text')
     .text(d => d.stk)
-    .attr('fill', 'white')
+    .attr('fill', 'rgba(0,0,0,1)')
     .attr('x', getSTKTextOffsetX)
-    .attr('y', 15)
+    .attr('y', 16)
     .attr('text-anchor', 'middle')
-
-  bars.append('text')
-    .text(d => d.range.meters + 'm')
-    .attr('height', 10)
-    .attr('fill', 'white')
-    .attr('x', d => d.range.meters * 2)
-    .attr('y', 50)
+  //
+  // bars.append('text')
+  //   .text(d => d.range.meters + 'm')
+  //   .attr('height', 10)
+  //   .attr('fill', 'white')
+  //   .attr('x', d => d.range.meters * 2)
+  //   .attr('y', 50)
+  //   .attr('text-anchor', 'start')
+  //   .attr('ali');
 
   updateSel.attr(/* operate on old and new elements */)
   updateSel.exit().remove() /* complete the enter-update-exit pattern */

@@ -36,24 +36,31 @@ a:hover {
     display: flex;
     flex: 1;
     justify-content: center;
+    align-items: center;
 }
-.chart .chart-header {
+.chart-header {
+  display: flex;
+  flex: 1;
+  margin: auto;
 }
-.chart .title {
-}
-.chart-inner {
+.chart-body {
   display: flex;
   margin: auto;
   justify-content: flex-end;
   flex-grow: 1;
-
 }
 .chart .weaponfile {
     font-size: 13px;
     color: rgba(150, 150, 150, 1);
 }
-.chart canvas {
-    display: flex;
+.axis line {
+    stroke: rgba(150, 150, 150, 1);
+    shape-rendering: crispEdges;
+}
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+    fill: rgba(150, 150, 150, 1);
 }
 .header {
     background: linear-gradient(
