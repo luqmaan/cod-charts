@@ -142,7 +142,6 @@ function setupChart(weaponModel) {
   <div class="chart">
     <div class="chart-header">
       <span class="title">${weaponModel.name}</span>
-      <span class="weaponfile">${weaponModel.WEAPONFILE}</span>
     </div>
     <div class="chart-body">
     </div>
@@ -186,6 +185,14 @@ function setupChart(weaponModel) {
 
   const barsGroup = svg.append('g')
     .attr('class', 'barsGroup')
+
+  svg.append('text')
+    .text('Distance (meters)')
+    .attr('y', 55)
+    .attr('x', barWidth / 2)
+    .attr('text-anchor', 'middle')
+    .attr('fill', 'rgba(120, 120, 120, 1)')
+    .attr('font-size', '12px')
 
   return svg;
 }

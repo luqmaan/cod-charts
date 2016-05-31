@@ -229,16 +229,3 @@ button:focus {
   color: #fff;;
   background-color: rgba(210, 88, 6, 1);
 }
-
-
-.enter {
-  fill: green;
-}
-
-.update {
-  fill: blue;
-}
-
-.exit {
-  fill: brown;
-}
