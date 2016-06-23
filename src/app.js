@@ -19,6 +19,8 @@ const weaponGroupNames = {
   pistol: 'Pistols',
 };
 
+const MAX_BAR_WIDTH = 200;
+
 function parseRangeUnits(units) {
   return {
     units: units,
@@ -126,6 +128,8 @@ function draw(chartsById, weapons) {
     const labels = weaponModel.stats.map(stat => stat.stk);
     const data = weaponModel.stats.map(stat => stat.range.meters);
 
+    console.log(weaponModel)
+
     let chart = chartsById[weaponModel.id];
     if (chart) {
       drawChart(weaponModel, chart);
@@ -153,7 +157,7 @@ function setupChart(weaponModel) {
   const ctx = div.querySelector('.chart-body');
 
   const maxRange = _.max(weaponModel.stats.map(wm => wm.range.meters * 2));
-  const barWidth = Math.max(200, maxRange);
+  const barWidth = MAX_BAR_WIDTH;
 
   const svg = d3.select(ctx)
     .append('svg')
@@ -214,7 +218,7 @@ function drawChart(weaponModel, svg) {
 
 
   function getSTKBarWidth(d, index) {
-    return d.range.meters * 2;
+    return Math.min(d.range.meters * 2, MAX_BAR_WIDTH);
   }
 
   const xOffsets = [0];
